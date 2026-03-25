@@ -1,0 +1,5 @@
+{
+  "name": "Eternal Union - Wedding Invitation",
+  "description": "A beautiful, interactive wedding invitation with an animated envelope opening experience.",
+  "requestFramePermissions": ["geolocation"]
+}
