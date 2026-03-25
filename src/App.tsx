@@ -123,7 +123,7 @@ export default function App() {
           <p className="font-serif italic text-xl text-gold-dark mb-6 tracking-wide">Junto a sus familias</p>
           <div className="relative inline-block mb-8">
             <h1 className="font-display text-6xl md:text-8xl leading-tight tracking-tighter">
-              Rosa Gutierrez? <br />
+              Rosa Gutierrez <br />
               <span className="text-gold italic font-serif text-4xl md:text-5xl block my-2">&</span>
               Alejandro Estrada
             </h1>
@@ -189,7 +189,7 @@ export default function App() {
           <div className="relative p-2 bg-white shadow-2xl rounded-2xl border border-gold/10">
             <div className="w-full aspect-[16/9] md:aspect-[21/9] rounded-xl overflow-hidden bg-neutral-100 relative">
               <iframe
-                src="https://maps.app.goo.gl/S43BYiH72Hf4Fd7s6"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14930.245844476054!2d-86.75783305!3d21.232305!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f4c28f6e8f4989b%3A0xf6a81e37456d6a54!2sPlaya%20Blanca!5e0!3m2!1sen!2smx!4v1711311000000!5m2!1sen!2smx"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
