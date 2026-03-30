@@ -129,7 +129,7 @@ export default function App() {
             </h1>
           </div>
           <p className="font-serif text-xl md:text-2xl tracking-[0.2em] uppercase text-ink max-w-md mx-auto leading-relaxed">
-            Tienen el honor de invitarle a la celebración de su boda
+            Tienen el honor de invitarle a la celebración de su boda aaa
           </p>
         </header>
 
