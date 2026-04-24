@@ -1,15 +1,22 @@
-# Build stage
-FROM node:20-alpine AS build
+FROM node:20-alpine
+
 WORKDIR /app
+
+# Copiamos archivos de dependencias
 COPY package*.json ./
+
+# Instalamos todas las dependencias (incluyendo tsx para el servidor)
 RUN npm install
+
+# Copiamos el resto del código
 COPY . .
-ENV VITE_BASE=/
+
+# Construimos el frontend (React)
 RUN npm run build
 
-# Production stage
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 3003
-CMD ["nginx", "-g", "daemon off;"]
+# Exponemos el puerto que usará Railway
+EXPOSE 8080
+
+# Comando para iniciar el servidor de Node
+# Railway ignorará el EXPOSE y usará la variable PORT automáticamente
+CMD ["npx", "tsx", "server/index.ts"]
