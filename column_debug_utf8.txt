@@ -1,0 +1,8 @@
+﻿Ôùç injected env (5) from .env // tip: Ôîÿ suppress logs { quiet: true }
+--- ESTRUCTURA DETECTADA ---
+Fila 1: []
+Fila 2: []
+Fila 3: [INVITADOS ]
+Fila 4: [N | Nombre |  |  | Parentesco | Integrantes]
+Fila 5: [1 | Leticia P├®rez |  |  | Mam├í]
+----------------------------

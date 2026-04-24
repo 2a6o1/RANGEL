@@ -3,9 +3,86 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion, useScroll, useTransform, useSpring } from "motion/react";
-import { MapPin, Calendar, Clock, Heart, MessageSquare, ChevronDown } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
+import { motion, useScroll, useSpring, useTransform, AnimatePresence } from "framer-motion";
+import {
+  Heart,
+  Calendar,
+  Clock,
+  MapPin,
+  ChevronDown,
+  MessageSquare,
+  Sparkles
+} from "lucide-react";
+import React, { useRef, useState, useEffect } from "react";
+
+// Componente para las imágenes flotantes de fondo
+const FloatingBackground = () => {
+  const images = ["imgs/autofoto.png", "imgs/bodaMuppet.png", "imgs/pose2.png", "imgs/resale.png"];
+  const [items, setItems] = React.useState<{ id: number, src: string, x: number, y: number, size: number }[]>([]);
+
+  React.useEffect(() => {
+    const createItem = (excludeSrcs: string[] = []) => {
+      const availableImages = images.filter(img => !excludeSrcs.includes(img));
+      const chosenSrc = availableImages.length > 0 
+        ? availableImages[Math.floor(Math.random() * availableImages.length)]
+        : images[Math.floor(Math.random() * images.length)];
+
+      return {
+        id: Math.random(),
+        src: chosenSrc,
+        x: Math.random() * 70 + 5, // 5% a 75% para evitar cortes bruscos
+        y: Math.random() * 70 + 5,
+        size: Math.random() * 200 + 400 // 400px a 600px
+      };
+    };
+
+    // Inicializar con 3 imágenes distintas
+    const first = createItem();
+    const second = createItem([first.src]);
+    const third = createItem([first.src, second.src]);
+    setItems([first, second, third]);
+
+    const interval = setInterval(() => {
+      setItems(prev => {
+        const next = [...prev];
+        next.shift(); 
+        const currentSrcs = next.map(i => i.src);
+        next.push(createItem(currentSrcs)); 
+        return next;
+      });
+    }, 7000); // Un poco más lento para disfrutar el tamaño
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-30">
+      <AnimatePresence>
+        {items.map((item) => (
+          <motion.div
+            key={item.id}
+            initial={{ opacity: 0, scale: 0.8, filter: 'blur(20px)' }}
+            animate={{ opacity: 1, scale: 1, filter: 'blur(4px)' }}
+            exit={{ opacity: 0, scale: 1.1, filter: 'blur(20px)' }}
+            transition={{ duration: 4, ease: "easeInOut" }}
+            className="absolute"
+            style={{
+              left: `${item.x}%`,
+              top: `${item.y}%`,
+              width: item.size,
+              height: item.size,
+              backgroundImage: `url(${item.src})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              maskImage: 'radial-gradient(circle, black 30%, transparent 80%)',
+              WebkitMaskImage: 'radial-gradient(circle, black 30%, transparent 80%)',
+            }}
+          />
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 export default function App() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -41,10 +118,75 @@ export default function App() {
 
   const [isRSVPed, setIsRSVPed] = useState(false);
   const [guestCount, setGuestCount] = useState(1);
-  const maxGuests = 10;
+  const [maxGuests, setMaxGuests] = useState(2);
+  const [guestName, setGuestName] = useState("[Nombre del Invitado]");
+  const [guestId, setGuestId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    if (id) {
+      setGuestId(id);
+      setIsLoading(true);
+
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
+      fetch(`${apiUrl}/api/guest/${id}`)
+        .then(res => res.json())
+        .then(data => {
+          console.log("[Frontend] Datos recibidos:", data);
+          if (data.nombre) {
+            setGuestName(data.nombre);
+            setMaxGuests(data.integrantes);
+
+            // Si ya tiene una respuesta guardada, cargamos el conteo y mostramos vista de éxito
+            if (data.estatus === 'Aceptada' || data.estatus === 'No aceptada') {
+              setIsRSVPed(true);
+              if (data.confirmados !== undefined) setGuestCount(data.confirmados);
+            } else {
+              setGuestCount(data.integrantes); // Por defecto el máximo
+            }
+          }
+          setIsLoading(false);
+        })
+        .catch(err => {
+          console.error("Error cargando invitado:", err);
+          setIsLoading(false);
+        });
+    }
+  }, []);
+
+
+  const handleRSVP = async (status: 'Aceptado' | 'Rechazado') => {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
+    setIsLoading(true);
+    try {
+      await fetch(`${apiUrl}/api/rsvp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: guestId,
+          status,
+          guestCount: status === 'Aceptado' ? guestCount : 0
+        })
+      });
+      setIsRSVPed(true);
+      if (status === 'Rechazado') {
+        alert("Sentimos que no puedas asistir. ¡Gracias por avisarnos!");
+      }
+    } catch (err) {
+      console.error("Error al confirmar:", err);
+      alert("Hubo un error al guardar tu respuesta. Por favor intenta de nuevo.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div ref={containerRef} className="relative min-h-[500vh] bg-cream">
+      <FloatingBackground />
       {/* Sticky Envelope Container */}
       <div className="sticky top-0 h-screen w-full flex items-start justify-center pt-[32vh] overflow-hidden pointer-events-none">
 
@@ -61,14 +203,26 @@ export default function App() {
 
           {/* The Invitation Card (Inside) */}
           <motion.div
-            style={{ y: cardY, scale: cardScale, zIndex: cardZIndex }}
-            className="absolute inset-x-4 top-4 bottom-4 bg-white shadow-lg rounded-sm p-8 flex flex-col items-center justify-center text-center border border-gold/10 pointer-events-auto"
+            style={{
+              y: cardY,
+              scale: cardScale,
+              zIndex: cardZIndex,
+              backgroundImage: 'url("imgs/resale.png")',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center 40%'
+            }}
+            className="absolute inset-x-2 top-2 bottom-2 bg-white shadow-lg rounded-sm p-8 flex flex-col items-center justify-center text-center border border-gold/10 pointer-events-auto relative overflow-hidden"
           >
-            <Heart className="text-gold mb-4" size={24} fill="currentColor" />
-            <h2 className="font-display text-3xl mb-2 italic">Reserva la Fecha</h2>
-            <div className="w-12 h-[1px] bg-gold/30 my-4" />
-            <p className="font-serif text-xl tracking-widest uppercase mb-1">Rosa & Alejandro</p>
-            <p className="font-serif text-sm text-gold tracking-widest uppercase">26 de Diciembre, 2026</p>
+            {/* Overlay para legibilidad */}
+            <div className="absolute inset-0 bg-cream/60 backdrop-blur-[1px] z-0" />
+
+            <div className="relative z-10 flex flex-col items-center">
+              <Heart className="text-gold-dark mb-4" size={24} fill="currentColor" />
+              <h2 className="font-display text-4xl mb-2 italic text-ink">Reserva la Fecha</h2>
+              <div className="w-12 h-[1.5px] bg-gold/40 my-4" />
+              <p className="font-serif text-2xl tracking-[0.2em] uppercase mb-1 text-ink">Rosa & Alejandro</p>
+              <p className="font-serif text-sm text-gold-dark tracking-[0.4em] uppercase font-medium">26 de Diciembre, 2026</p>
+            </div>
           </motion.div>
 
           {/* Front Flap (Top) */}
@@ -138,7 +292,9 @@ export default function App() {
           <div className="gold-border p-1 bg-white rounded-lg shadow-2xl">
             <div className="border border-gold/20 p-10 md:p-16 text-center rounded-sm bg-white">
               <p className="font-serif text-xs tracking-[0.4em] uppercase text-gold-dark mb-6">Invitado Especial</p>
-              <h3 className="font-display text-4xl md:text-5xl italic mb-6">Sr. y Sra. [Nombre del Invitado]</h3>
+              <h3 className="font-display text-4xl md:text-5xl italic mb-6">
+                {isLoading ? "Cargando..." : guestName}
+              </h3>
               <div className="w-12 h-[1px] bg-gold/40 mx-auto mb-6" />
               <p className="font-serif text-lg text-ink italic leading-relaxed max-w-sm mx-auto">
                 "Su presencia es el mejor regalo que podríamos recibir. Esperamos compartir este gran momento con usted."
@@ -234,7 +390,8 @@ export default function App() {
                       </div>
                       <button
                         onClick={() => setGuestCount(prev => Math.min(maxGuests, prev + 1))}
-                        className="w-12 h-12 rounded-full border border-gold/20 flex items-center justify-center text-gold-dark hover:bg-gold/5 transition-all active:scale-90"
+                        disabled={guestCount >= maxGuests}
+                        className={`w-12 h-12 rounded-full border border-gold/20 flex items-center justify-center text-gold-dark transition-all active:scale-90 ${guestCount >= maxGuests ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gold/5'}`}
                       >
                         <span className="text-2xl font-light">+</span>
                       </button>
@@ -243,13 +400,16 @@ export default function App() {
 
                   <div className="flex flex-col gap-4">
                     <button
-                      onClick={() => setIsRSVPed(true)}
+                      onClick={() => handleRSVP('Aceptado')}
                       className="w-full bg-ink text-cream font-serif tracking-[0.3em] uppercase py-5 rounded-full hover:bg-gold-dark transition-all duration-500 shadow-xl active:scale-[0.98] transform flex items-center justify-center gap-3"
                     >
                       <Heart size={18} fill="currentColor" />
                       Aceptar con Gusto
                     </button>
-                    <button className="w-full py-4 text-ink/30 font-serif text-xs tracking-[0.3em] uppercase hover:text-ink transition-colors">
+                    <button
+                      onClick={() => handleRSVP('Rechazado')}
+                      className="w-full py-4 text-ink/30 font-serif text-xs tracking-[0.3em] uppercase hover:text-ink transition-colors"
+                    >
                       Declinar con Pesar
                     </button>
                   </div>
@@ -258,22 +418,36 @@ export default function App() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="py-6"
+                  className="relative py-12 px-6 overflow-hidden rounded-2xl min-h-[400px] flex flex-col items-center justify-center"
                 >
-                  <div className="w-20 h-20 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-8">
-                    <Heart className="text-gold" size={40} fill="currentColor" />
+                  {/* Fondo con imagen nítida */}
+                  <div
+                    className="absolute inset-0 z-0 opacity-90"
+                    style={{
+                      backgroundImage: 'url("imgs/bodaMuppet.png")',
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      filter: 'none'
+                    }}
+                  />
+
+                  {/* Tarjeta de texto (Glassmorphism) para legibilidad */}
+                  <div className="relative z-10 bg-white/40 backdrop-blur-md p-8 rounded-2xl border border-white/20 shadow-2xl flex flex-col items-center max-w-[90%]">
+                    <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                      <Heart className="text-gold-dark" size={32} fill="currentColor" />
+                    </div>
+                    <h3 className="font-display text-4xl mb-4 italic text-ink">¡Estás en la lista!</h3>
+                    <p className="font-serif text-lg text-ink leading-relaxed text-center">
+                      Hemos recibido la confirmación de {guestCount} {guestCount === 1 ? 'persona' : 'personas'}. <br />
+                      Significa mucho para nosotros que nos acompañes.
+                    </p>
+                    <button
+                      onClick={() => setIsRSVPed(false)}
+                      className="mt-8 text-gold-dark font-serif text-[10px] tracking-[0.4em] uppercase hover:underline transition-all"
+                    >
+                      Editar Respuesta
+                    </button>
                   </div>
-                  <h3 className="font-display text-4xl mb-6 italic">¡Estás en la lista!</h3>
-                  <p className="font-serif text-xl text-ink leading-relaxed">
-                    Hemos recibido la confirmación de {guestCount} {guestCount === 1 ? 'persona' : 'personas'}. <br />
-                    Significa mucho para nosotros que nos acompañes.
-                  </p>
-                  <button
-                    onClick={() => setIsRSVPed(false)}
-                    className="mt-12 text-gold font-serif text-[10px] tracking-[0.4em] uppercase hover:underline"
-                  >
-                    Editar Respuesta
-                  </button>
                 </motion.div>
               )}
             </div>
