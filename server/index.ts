@@ -2,6 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { google } from 'googleapis';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -101,6 +106,14 @@ app.post('/api/rsvp', async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Error al actualizar Google Sheets' });
   }
+});
+
+// Servir archivos estáticos de React (Carpeta Dist)
+app.use(express.static(path.join(__dirname, '../dist')));
+
+// Ruta catch-all para React (SPA)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 const PORT = process.env.PORT || 3001;

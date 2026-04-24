@@ -23,16 +23,16 @@ const FloatingBackground = () => {
   React.useEffect(() => {
     const createItem = (excludeSrcs: string[] = []) => {
       const availableImages = images.filter(img => !excludeSrcs.includes(img));
-      const chosenSrc = availableImages.length > 0 
+      const chosenSrc = availableImages.length > 0
         ? availableImages[Math.floor(Math.random() * availableImages.length)]
         : images[Math.floor(Math.random() * images.length)];
 
       return {
         id: Math.random(),
         src: chosenSrc,
-        x: Math.random() * 70 + 5, // 5% a 75% para evitar cortes bruscos
+        x: Math.random() * 70 + 5,
         y: Math.random() * 70 + 5,
-        size: Math.random() * 200 + 400 // 400px a 600px
+        size: Math.random() * 200 + 400
       };
     };
 
@@ -45,9 +45,9 @@ const FloatingBackground = () => {
     const interval = setInterval(() => {
       setItems(prev => {
         const next = [...prev];
-        next.shift(); 
+        next.shift();
         const currentSrcs = next.map(i => i.src);
-        next.push(createItem(currentSrcs)); 
+        next.push(createItem(currentSrcs));
         return next;
       });
     }, 7000); // Un poco más lento para disfrutar el tamaño
@@ -130,7 +130,7 @@ export default function App() {
       setGuestId(id);
       setIsLoading(true);
 
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const apiUrl = import.meta.env.VITE_API_URL || '';
 
       fetch(`${apiUrl}/api/guest/${id}`)
         .then(res => res.json())
