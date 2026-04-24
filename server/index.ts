@@ -23,6 +23,13 @@ const auth = new google.auth.JWT({
 const sheets = google.sheets({ version: 'v4', auth });
 const spreadsheetId = process.env.SPREADSHEET_ID;
 
+// Configuración de rutas estáticas
+const distPath = path.resolve(__dirname, '../dist');
+console.log(`[Server] Sirviendo frontend desde: ${distPath}`);
+
+// 1. Servir archivos estáticos (JS, CSS, Imágenes) PRIMERO
+app.use(express.static(distPath));
+
 // GET /api/guest/:id - Obtener info del invitado
 app.get('/api/guest/:id', async (req, res) => {
   try {
@@ -52,13 +59,12 @@ app.get('/api/guest/:id', async (req, res) => {
 
     console.log(`[API] ✅ Fila encontrada (JSON):`, JSON.stringify(guestRow));
 
-    // El nombre suele estar en B (1), C (2) o D (3)
-    const nombreFinal = guestRow[1] || guestRow[2] || guestRow[3] || "Invitado";
+    const nombreFinal = guestRow[2] || guestRow[1] || "Invitado";
 
     res.json({
       id: guestRow[9],
-      nombre: guestRow[2] || guestRow[1] || "Invitado",
-      integrantes: parseInt(guestRow[8]) || 1, // Columna I (índice 8) es el máximo de invitados
+      nombre: nombreFinal,
+      integrantes: parseInt(guestRow[8]) || 1,
       estatus: guestRow[10],
       confirmados: guestRow[11] 
     });
@@ -75,7 +81,7 @@ app.post('/api/rsvp', async (req, res) => {
     
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'INVITADOS!J:J', // Buscamos en la columna J
+      range: 'INVITADOS!J:J', 
     });
 
     const rows = response.data.values;
@@ -86,11 +92,9 @@ app.post('/api/rsvp', async (req, res) => {
 
     const realRowIndex = rowIndex + 1; 
 
-    // Determinamos texto de estatus y cantidad
     const finalStatus = status === 'Aceptado' ? 'Aceptada' : 'No aceptada';
     const finalCount = status === 'Aceptado' ? guestCount : 0;
 
-    // Actualizamos Estatus (Columna K - índice 10) y Confirmados (Columna L - índice 11)
     await sheets.spreadsheets.values.update({
       spreadsheetId,
       range: `INVITADOS!K${realRowIndex}:L${realRowIndex}`,
@@ -108,12 +112,9 @@ app.post('/api/rsvp', async (req, res) => {
   }
 });
 
-// Servir archivos estáticos de React (Carpeta Dist)
-app.use(express.static(path.join(__dirname, '../dist')));
-
 // Ruta catch-all para React (SPA)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/index.html'));
+  res.sendFile(path.join(distPath, 'index.html'));
 });
 
 const PORT = Number(process.env.PORT) || 3001;
