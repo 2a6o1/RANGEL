@@ -147,9 +147,9 @@ async function autoProvisionIds() {
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
-      const name = row[0]; // Columna B (Nombre)
-      let currentId = row[8]; // Columna J (ID)
-      const currentUrl = row[13]; // Columna O (Url - el rango llega hasta J, hay que ampliarlo)
+      const name = row[1]; // CAMBIO: Usamos Columna C (Nombre) en lugar de B
+      let currentId = row[8]; // Columna J (index 8 relativo a B)
+      const currentUrl = row[13]; // Columna O (index 13 relativo a B)
       const realRowIndex = i + 5;
 
       // Lógica robusta para detectar si falta el ID
