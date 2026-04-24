@@ -72,9 +72,12 @@ app.get('/api/guest/:id', async (req, res) => {
       estatus: guestRow[10],
       confirmados: guestRow[11] 
     });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al consultar Google Sheets' });
+  } catch (error: any) {
+    console.error("❌ ERROR GOOGLE SHEETS API:", error.message);
+    if (error.response) {
+      console.error("DETALLE:", JSON.stringify(error.response.data));
+    }
+    res.status(500).json({ message: 'Error al consultar Google Sheets', detail: error.message });
   }
 });
 
