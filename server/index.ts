@@ -23,12 +23,16 @@ const auth = new google.auth.JWT({
 const sheets = google.sheets({ version: 'v4', auth });
 const spreadsheetId = process.env.SPREADSHEET_ID;
 
-// Configuración de rutas estáticas
-const distPath = path.resolve(__dirname, '../dist');
-console.log(`[Server] Sirviendo frontend desde: ${distPath}`);
+// Configuración de rutas estáticas absoluta
+const root = process.cwd();
+const distPath = path.join(root, 'dist');
+console.log(`[Server] Root: ${root}`);
+console.log(`[Server] Dist Path: ${distPath}`);
 
-// 1. Servir archivos estáticos (JS, CSS, Imágenes) PRIMERO
+// 1. Servir archivos estáticos (JS, CSS, Imágenes)
+// Lo servimos en la raíz y también en /RANGEL para mayor compatibilidad
 app.use(express.static(distPath));
+app.use('/RANGEL', express.static(distPath));
 
 // GET /api/guest/:id - Obtener info del invitado
 app.get('/api/guest/:id', async (req, res) => {
