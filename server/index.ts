@@ -152,13 +152,17 @@ async function autoProvisionIds() {
       const currentUrl = row[13]; // Columna O (Url - el rango llega hasta J, hay que ampliarlo)
       const realRowIndex = i + 5;
 
-      // Si no hay ID, generamos uno nuevo
+      // Lógica robusta para detectar si falta el ID
       let needsUpdate = false;
       let idToUse = currentId;
 
-      if (name && (!currentId || currentId.trim() === "" || currentId.includes('+'))) {
+      // Un ID válido debe existir, no ser solo espacios y tener longitud lógica (ej. 6)
+      const isIdValid = idToUse && String(idToUse).trim().length === 6 && !String(idToUse).includes('+');
+
+      if (name && name.trim() !== "" && !isIdValid) {
         idToUse = generateCustomId(6);
         needsUpdate = true;
+        console.log(`[AutoID] ✨ Generando nuevo ID (${idToUse}) para: ${name}`);
       }
 
       // Verificamos si falta la URL o si no coincide con el ID
