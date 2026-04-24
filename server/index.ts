@@ -39,7 +39,10 @@ app.get('/api/guest/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Leemos la hoja (Incluyendo hasta la columna Z para asegurar captar el ID en J)
+    console.log(`[Server] Intentando consultar Spreadsheet: ${spreadsheetId?.substring(0, 5)}...`);
+    console.log(`[Server] Rango solicitado: 'INVITADOS!A:Z'`);
+
+    // Leemos la hoja
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
       range: 'INVITADOS!A:Z', 
@@ -118,6 +121,85 @@ app.post('/api/rsvp', async (req, res) => {
     res.status(500).json({ message: 'Error al actualizar Google Sheets' });
   }
 });
+
+// Función para generar IDs de 6 caracteres (Evitando caracteres ambiguos)
+function generateCustomId(length = 6) {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+// Función que revisa y asigna IDs a nuevos registros
+async function autoProvisionIds() {
+  try {
+    console.log("[AutoID] 🔍 Escaneando hoja para nuevos registros sin ID...");
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: 'INVITADOS!B5:O500', 
+    });
+
+    const rows = response.data.values || [];
+    const updates = [];
+    const baseUrl = 'https://rangel-production.up.railway.app/RANGEL/';
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const name = row[0]; // Columna B (Nombre)
+      let currentId = row[8]; // Columna J (ID)
+      const currentUrl = row[13]; // Columna O (Url - el rango llega hasta J, hay que ampliarlo)
+      const realRowIndex = i + 5;
+
+      // Si no hay ID, generamos uno nuevo
+      let needsUpdate = false;
+      let idToUse = currentId;
+
+      if (name && (!currentId || currentId.trim() === "" || currentId.includes('+'))) {
+        idToUse = generateCustomId(6);
+        needsUpdate = true;
+      }
+
+      // Verificamos si falta la URL o si no coincide con el ID
+      const expectedUrl = idToUse ? `${baseUrl}?id=${idToUse}` : "";
+      if (idToUse && (!currentUrl || currentUrl !== expectedUrl)) {
+        needsUpdate = true;
+      }
+
+      if (needsUpdate && idToUse) {
+        updates.push({
+          range: `INVITADOS!J${realRowIndex}`,
+          values: [[idToUse]]
+        });
+        updates.push({
+          range: `INVITADOS!O${realRowIndex}`,
+          values: [[expectedUrl]]
+        });
+      }
+    }
+
+    if (updates.length > 0) {
+      await sheets.spreadsheets.values.batchUpdate({
+        spreadsheetId,
+        requestBody: {
+          data: updates,
+          valueInputOption: 'USER_ENTERED'
+        }
+      });
+      console.log(`[AutoID] ✅ Se asignaron ${updates.length} IDs nuevos.`);
+    } else {
+      console.log("[AutoID] ℹ️ Todos los registros tienen ID.");
+    }
+  } catch (error: any) {
+    console.error("[AutoID] ❌ Error en aprovisionamiento automático:", error.message);
+  }
+}
+
+// Ejecutar cada 2 minutos (120,000 ms)
+setInterval(autoProvisionIds, 2 * 60 * 1000);
+// Ejecución inicial al arrancar el servidor
+autoProvisionIds();
 
 // Ruta catch-all para React (SPA)
 app.get('*', (req, res) => {
