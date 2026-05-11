@@ -162,9 +162,8 @@ const CountdownTimer = () => {
 };
 
 // Nuevo Componente: Mago de Información (Mini Cartas)
-const InfoWizard = () => {
+const InfoWizard = ({ onComplete, isCompleted }: { onComplete: () => void, isCompleted: boolean }) => {
   const [step, setStep] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
 
   // Definición de los pasos solicitados
   const steps = [
@@ -175,7 +174,6 @@ const InfoWizard = () => {
         <div className="flex flex-col items-center text-center">
           <p className="font-display text-4xl mb-2 text-ink">26 Diciembre</p>
           <p className="font-serif text-xl uppercase tracking-[0.2em] text-gold-dark italic">Sábado • 2026</p>
-          <p className="font-serif text-sm text-ink/60 mt-4">Aparte esta fecha para celebrar con nosotros</p>
         </div>
       ),
       button: "Continuar"
@@ -184,20 +182,19 @@ const InfoWizard = () => {
       title: "Itinerario",
       icon: <Clock className="text-gold-dark" size={32} strokeWidth={1} />,
       content: (
-        <div className="w-full space-y-6">
-          <div className="border-l-2 border-gold/20 pl-4 py-1">
-            <p className="font-serif text-xs text-gold-dark tracking-widest uppercase mb-1">3:00 PM • Ceremonia</p>
-            <p className="font-display text-lg leading-tight">Catedral - Basílica Metropolitana de Nuestra Madre Santísima de la Luz</p>
+        <div className="w-full space-y-4">
+          <div className="border-l-2 border-gold/20 pl-4 py-0.5">
+            <p className="font-serif text-[10px] text-gold-dark tracking-widest uppercase">3:00 PM • Ceremonia</p>
+            <p className="font-display text-base">Catedral Basílica Metropolitana</p>
           </div>
-          <div className="border-l-2 border-gold/20 pl-4 py-1">
-            <p className="font-serif text-xs text-gold-dark tracking-widest uppercase mb-1">4:30 PM • Recepción</p>
-            <p className="font-display text-lg">Jardín Cisneros</p>
+          <div className="border-l-2 border-gold/20 pl-4 py-0.5">
+            <p className="font-serif text-[10px] text-gold-dark tracking-widest uppercase">4:30 PM • Recepción</p>
+            <p className="font-display text-base">Jardín Cisneros</p>
           </div>
-          <div className="border-l-2 border-gold/20 pl-4 py-1">
-            <p className="font-serif text-xs text-gold-dark tracking-widest uppercase mb-1">5:00 PM • Banquete</p>
-            <p className="font-display text-lg">Comida y Celebración</p>
+          <div className="border-l-2 border-gold/20 pl-4 py-0.5">
+            <p className="font-serif text-[10px] text-gold-dark tracking-widest uppercase">5:00 PM • Banquete</p>
+            <p className="font-display text-base">Comida y Celebración</p>
           </div>
-          <p className="font-serif text-[11px] italic text-ink/50 text-center mt-6">Sugerimos llegar 15 min antes para la ceremonia.</p>
         </div>
       ),
       button: "Siguiente"
@@ -207,28 +204,42 @@ const InfoWizard = () => {
       icon: <Heart className="text-gold-dark" size={32} strokeWidth={1} />,
       content: (
         <div className="flex flex-col items-center text-center">
-          <p className="font-display text-4xl mb-4 italic">Formal / Cocktail</p>
-          <div className="w-12 h-[1px] bg-gold/30 mb-6" />
-          <div className="font-serif text-sm text-ink/80 leading-relaxed space-y-3">
-            <p>Recomendamos calzado cómodo para superficie de jardín.</p>
-            <p>Clima esperado: Templado al atardecer.</p>
-          </div>
+          <p className="font-display text-3xl mb-3 italic">Formal / Cocktail</p>
+          <div className="w-10 h-[1px] bg-gold/30 mb-4" />
+          <p className="font-serif text-sm text-ink/80 leading-relaxed italic">
+            Recomendamos calzado cómodo para jardín.
+          </p>
         </div>
       ),
-      button: "¡Entendido!"
+      button: "Confirmar Lectura"
     }
   ];
 
-  if (!isVisible) return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-12 flex flex-col items-center">
-       <button onClick={() => { setIsVisible(true); setStep(0); }} className="font-serif text-[10px] tracking-[0.4em] uppercase text-gold/40 hover:text-gold transition-colors">
-          Ver detalles de nuevo
-       </button>
+  if (isCompleted) return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1 }}
+      className="w-full max-w-5xl mx-auto"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+         {steps.map((s, i) => (
+           <div key={i} className="bg-white/50 backdrop-blur-sm border border-gold/10 p-8 rounded-2xl flex flex-col items-center text-center shadow-sm">
+              <div className="mb-4 opacity-50">{s.icon}</div>
+              <h5 className="font-serif text-[10px] tracking-[0.3em] uppercase text-gold-dark mb-4">{s.title}</h5>
+              <div className="scale-90">{s.content}</div>
+           </div>
+         ))}
+      </div>
+      <div className="mt-12 flex flex-col items-center opacity-40">
+         <Sparkles size={16} className="text-gold mb-2" />
+         <span className="font-serif text-[9px] tracking-[0.5em] uppercase">Información Confirmada</span>
+      </div>
     </motion.div>
   );
 
   return (
-    <div className="w-full flex items-center justify-center py-10 px-4">
+    <div className="w-full flex items-center justify-center py-6 px-4">
       <AnimatePresence mode="wait">
         <motion.div
           key={step}
@@ -236,27 +247,22 @@ const InfoWizard = () => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -30, scale: 0.95 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="gold-border p-10 md:p-14 bg-white rounded-3xl shadow-2xl w-full max-w-lg flex flex-col items-center relative overflow-hidden"
+          className="gold-border p-8 md:p-12 bg-white rounded-3xl shadow-2xl w-full max-w-lg flex flex-col items-center relative overflow-hidden"
         >
-          {/* Fondo decorativo sutil */}
-          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-             <Sparkles size={80} />
-          </div>
-
-          <div className="mb-8 p-4 rounded-full bg-gold/5 flex items-center justify-center">
+          <div className="mb-6 p-4 rounded-full bg-gold/5 flex items-center justify-center">
             {steps[step].icon}
           </div>
           
-          <h4 className="font-serif text-[10px] tracking-[0.5em] uppercase text-gold-dark mb-10 text-center border-b border-gold/10 pb-2">
+          <h4 className="font-serif text-[10px] tracking-[0.5em] uppercase text-gold-dark mb-8 text-center border-b border-gold/10 pb-2">
             {steps[step].title}
           </h4>
           
-          <div className="mb-14 w-full flex flex-col items-center min-h-[220px] justify-center">
+          <div className="mb-10 w-full flex flex-col items-center min-h-[180px] justify-center">
             {steps[step].content}
           </div>
 
           <button
-            onClick={() => step < 2 ? setStep(step + 1) : setIsVisible(false)}
+            onClick={() => step < 2 ? setStep(step + 1) : onComplete()}
             className="group flex flex-col items-center gap-3 active:scale-95 transition-transform"
           >
             <span className="font-serif text-xs tracking-[0.4em] uppercase text-ink group-hover:text-gold-dark transition-colors">
@@ -265,7 +271,6 @@ const InfoWizard = () => {
             <div className="w-10 h-[1px] bg-gold/30 group-hover:w-20 group-hover:bg-gold-dark transition-all duration-500" />
           </button>
 
-          {/* Indicador de pasos */}
           <div className="absolute bottom-6 flex gap-2">
              {[0,1,2].map(i => (
                <div key={i} className={`w-1.5 h-1.5 rounded-full transition-colors ${i === step ? 'bg-gold' : 'bg-gold/20'}`} />
@@ -315,6 +320,7 @@ export default function App() {
   const [guestName, setGuestName] = useState("[Nombre del Invitado]");
   const [guestId, setGuestId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInfoCompleted, setIsInfoCompleted] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -521,11 +527,20 @@ export default function App() {
 
         {/* Info Wizard Section (Date, Itinerary, Dress Code) */}
         <section className="w-full mb-32">
-          <InfoWizard />
+          <InfoWizard onComplete={() => setIsInfoCompleted(true)} isCompleted={isInfoCompleted} />
         </section>
 
-        {/* Location - Solid Layout */}
-        <section className="mb-24 w-full text-center">
+        {/* Gated Sections: Only visible after completing the Wizard */}
+        <AnimatePresence>
+          {isInfoCompleted && (
+            <motion.div
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+              className="w-full flex flex-col items-center"
+            >
+              {/* Location - Solid Layout */}
+              <section className="mb-24 w-full text-center">
           <div className="inline-block p-3 rounded-full bg-gold/10 mb-6">
             <MapPin className="text-gold-dark" size={28} strokeWidth={1} />
           </div>
@@ -649,12 +664,15 @@ export default function App() {
           </div>
         </section>
 
-        <footer className="pb-20 text-center opacity-40">
-          <div className="w-16 h-[1px] bg-gold mx-auto mb-10" />
-          <p className="font-display text-3xl italic mb-4">Rosa & Alejandro</p>
-          <p className="font-serif text-[10px] tracking-[0.5em] uppercase">Cancún, Quintana Roo • 2026</p>
-        </footer>
-      </motion.main>
-    </div>
+          <footer className="pb-20 text-center opacity-40">
+            <div className="w-16 h-[1px] bg-gold mx-auto mb-10" />
+            <p className="font-display text-3xl italic mb-4">Rosa & Alejandro</p>
+            <p className="font-serif text-[10px] tracking-[0.5em] uppercase">Cancún, Quintana Roo • 2026</p>
+          </footer>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </motion.main>
+</div>
   );
 }
