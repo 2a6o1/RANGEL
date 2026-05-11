@@ -161,6 +161,121 @@ const CountdownTimer = () => {
   );
 };
 
+// Nuevo Componente: Mago de Información (Mini Cartas)
+const InfoWizard = () => {
+  const [step, setStep] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+
+  // Definición de los pasos solicitados
+  const steps = [
+    {
+      title: "La Fecha",
+      icon: <Calendar className="text-gold-dark" size={32} strokeWidth={1} />,
+      content: (
+        <div className="flex flex-col items-center text-center">
+          <p className="font-display text-4xl mb-2 text-ink">26 Diciembre</p>
+          <p className="font-serif text-xl uppercase tracking-[0.2em] text-gold-dark italic">Sábado • 2026</p>
+          <p className="font-serif text-sm text-ink/60 mt-4">Aparte esta fecha para celebrar con nosotros</p>
+        </div>
+      ),
+      button: "Continuar"
+    },
+    {
+      title: "Itinerario",
+      icon: <Clock className="text-gold-dark" size={32} strokeWidth={1} />,
+      content: (
+        <div className="w-full space-y-6">
+          <div className="border-l-2 border-gold/20 pl-4 py-1">
+            <p className="font-serif text-xs text-gold-dark tracking-widest uppercase mb-1">3:00 PM • Ceremonia</p>
+            <p className="font-display text-lg leading-tight">Catedral - Basílica Metropolitana de Nuestra Madre Santísima de la Luz</p>
+          </div>
+          <div className="border-l-2 border-gold/20 pl-4 py-1">
+            <p className="font-serif text-xs text-gold-dark tracking-widest uppercase mb-1">4:30 PM • Recepción</p>
+            <p className="font-display text-lg">Jardín Cisneros</p>
+          </div>
+          <div className="border-l-2 border-gold/20 pl-4 py-1">
+            <p className="font-serif text-xs text-gold-dark tracking-widest uppercase mb-1">5:00 PM • Banquete</p>
+            <p className="font-display text-lg">Comida y Celebración</p>
+          </div>
+          <p className="font-serif text-[11px] italic text-ink/50 text-center mt-6">Sugerimos llegar 15 min antes para la ceremonia.</p>
+        </div>
+      ),
+      button: "Siguiente"
+    },
+    {
+      title: "Dress Code",
+      icon: <Heart className="text-gold-dark" size={32} strokeWidth={1} />,
+      content: (
+        <div className="flex flex-col items-center text-center">
+          <p className="font-display text-4xl mb-4 italic">Formal / Cocktail</p>
+          <div className="w-12 h-[1px] bg-gold/30 mb-6" />
+          <div className="font-serif text-sm text-ink/80 leading-relaxed space-y-3">
+            <p>Recomendamos calzado cómodo para superficie de jardín.</p>
+            <p>Clima esperado: Templado al atardecer.</p>
+          </div>
+        </div>
+      ),
+      button: "¡Entendido!"
+    }
+  ];
+
+  if (!isVisible) return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-12 flex flex-col items-center">
+       <button onClick={() => { setIsVisible(true); setStep(0); }} className="font-serif text-[10px] tracking-[0.4em] uppercase text-gold/40 hover:text-gold transition-colors">
+          Ver detalles de nuevo
+       </button>
+    </motion.div>
+  );
+
+  return (
+    <div className="w-full flex items-center justify-center py-10 px-4">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step}
+          initial={{ opacity: 0, y: 30, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -30, scale: 0.95 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="gold-border p-10 md:p-14 bg-white rounded-3xl shadow-2xl w-full max-w-lg flex flex-col items-center relative overflow-hidden"
+        >
+          {/* Fondo decorativo sutil */}
+          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+             <Sparkles size={80} />
+          </div>
+
+          <div className="mb-8 p-4 rounded-full bg-gold/5 flex items-center justify-center">
+            {steps[step].icon}
+          </div>
+          
+          <h4 className="font-serif text-[10px] tracking-[0.5em] uppercase text-gold-dark mb-10 text-center border-b border-gold/10 pb-2">
+            {steps[step].title}
+          </h4>
+          
+          <div className="mb-14 w-full flex flex-col items-center min-h-[220px] justify-center">
+            {steps[step].content}
+          </div>
+
+          <button
+            onClick={() => step < 2 ? setStep(step + 1) : setIsVisible(false)}
+            className="group flex flex-col items-center gap-3 active:scale-95 transition-transform"
+          >
+            <span className="font-serif text-xs tracking-[0.4em] uppercase text-ink group-hover:text-gold-dark transition-colors">
+              {steps[step].button}
+            </span>
+            <div className="w-10 h-[1px] bg-gold/30 group-hover:w-20 group-hover:bg-gold-dark transition-all duration-500" />
+          </button>
+
+          {/* Indicador de pasos */}
+          <div className="absolute bottom-6 flex gap-2">
+             {[0,1,2].map(i => (
+               <div key={i} className={`w-1.5 h-1.5 rounded-full transition-colors ${i === step ? 'bg-gold' : 'bg-gold/20'}`} />
+             ))}
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+};
 
 export default function App() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -404,30 +519,9 @@ export default function App() {
           </div>
         </div>
 
-        {/* Date & Time - Structured Grid */}
-        <section className="w-full mb-24">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-y border-gold/40">
-            <div className="py-12 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gold/20 bg-white">
-              <Calendar className="text-gold-dark mb-4" size={28} strokeWidth={1} />
-              <h4 className="font-serif text-[10px] tracking-[0.4em] uppercase text-gold-dark mb-3">La Fecha</h4>
-              <p className="font-display text-2xl">26 Diciembre, 2026</p>
-              <p className="font-serif text-sm uppercase tracking-widest mt-1">Sábado</p>
-            </div>
-
-            <div className="py-12 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gold/20 bg-white">
-              <Clock className="text-gold-dark mb-4" size={28} strokeWidth={1} />
-              <h4 className="font-serif text-[10px] tracking-[0.4em] uppercase text-gold-dark mb-3">La Hora</h4>
-              <p className="font-display text-2xl">4:00 PM</p>
-              <p className="font-serif text-sm uppercase tracking-widest mt-1">Recepción a continuación</p>
-            </div>
-
-            <div className="py-12 flex flex-col items-center justify-center bg-white">
-              <Heart className="text-gold-dark mb-4" size={28} strokeWidth={1} />
-              <h4 className="font-serif text-[10px] tracking-[0.4em] uppercase text-gold-dark mb-3">Vestimenta</h4>
-              <p className="font-display text-2xl">Etiqueta</p>
-              <p className="font-serif text-sm uppercase tracking-widest mt-1">Formal Opcional</p>
-            </div>
-          </div>
+        {/* Info Wizard Section (Date, Itinerary, Dress Code) */}
+        <section className="w-full mb-32">
+          <InfoWizard />
         </section>
 
         {/* Location - Solid Layout */}
