@@ -539,33 +539,92 @@ export default function App() {
               transition={{ duration: 1.2, ease: "easeOut" }}
               className="w-full flex flex-col items-center"
             >
-              {/* Location - Solid Layout */}
-              <section className="mb-24 w-full text-center">
-          <div className="inline-block p-3 rounded-full bg-gold/10 mb-6">
-            <MapPin className="text-gold-dark" size={28} strokeWidth={1} />
-          </div>
-          <h4 className="font-serif text-[10px] tracking-[0.4em] uppercase text-gold-dark mb-4">El Lugar</h4>
-          <h3 className="font-display text-4xl md:text-5xl mb-6">The Playa Blanca</h3>
-          <p className="font-serif text-xl mb-12 max-w-md mx-auto leading-relaxed text-ink">
-            Punta Cancun, 92, 77516  <br />
-            Cancún, Quintana Roo, México
-          </p>
+        {/* Locations Section (Church & Reception) */}
+        <section className="mb-24 w-full text-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-12 w-full">
+            
+            {/* Church Section */}
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="flex flex-col items-center"
+            >
+              <div className="inline-block p-3 rounded-full bg-gold/10 mb-6">
+                <MapPin className="text-gold-dark" size={28} strokeWidth={1} />
+              </div>
+              <h4 className="font-serif text-[10px] tracking-[0.4em] uppercase text-gold-dark mb-4">La Ceremonia</h4>
+              <h3 className="font-display text-3xl md:text-4xl mb-4 italic">Catedral Basílica Metropolitana</h3>
+              <p className="font-serif text-base mb-8 max-w-xs mx-auto leading-relaxed text-ink opacity-80">
+                Álvaro Obregón 112, Centro <br />
+                León de los Aldama, Gto.
+              </p>
+              
+              <div className="relative p-2 bg-white shadow-xl rounded-2xl border border-gold/10 w-full mb-8">
+                <div className="w-full aspect-video rounded-xl overflow-hidden bg-neutral-100 relative">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14885.759664539823!2d-101.68426000000001!3d21.1238899!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x842bbf0c92a59605%3A0xf9567ed0dd2be656!2sCatedral%20-%20Bas%C3%ADlica%20Metropolitana%20de%20Nuestra%20Madre%20Sant%C3%ADsima%20de%20la%20Luz!5e0!3m2!1ses!2smx!4v1711311000000!5m2!1ses!2smx"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen={true}
+                    loading="lazy"
+                    className="grayscale contrast-125 brightness-95 hover:grayscale-0 transition-all duration-1000"
+                  ></iframe>
+                </div>
+              </div>
+              
+              <a 
+                href="https://www.google.com/maps/search/?api=1&query=Catedral+Bas%C3%ADlica+Metropolitana+de+Nuestra+Madre+Sant%C3%ADsima+de+la+Luz+León"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-serif text-xs tracking-[0.3em] uppercase text-gold-dark hover:text-ink transition-colors border border-gold/30 px-8 py-3 rounded-full"
+              >
+                ¿Cómo llegar?
+              </a>
+            </motion.div>
 
-          {/* Map with Solid Frame */}
-          <div className="relative p-2 bg-white shadow-2xl rounded-2xl border border-gold/10">
-            <div className="w-full aspect-[16/9] md:aspect-[21/9] rounded-xl overflow-hidden bg-neutral-100 relative">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14930.245844476054!2d-86.75783305!3d21.232305!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f4c28f6e8f4989b%3A0xf6a81e37456d6a54!2sPlaya%20Blanca!5e0!3m2!1sen!2smx!4v1711311000000!5m2!1sen!2smx"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen={true}
-                loading="lazy"
-                referrerPolicy="no-referrer"
-                className="grayscale contrast-125 brightness-95 hover:grayscale-0 transition-all duration-1000"
-              ></iframe>
-              <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_100px_rgba(0,0,0,0.1)]" />
-            </div>
+            {/* Reception Section */}
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="flex flex-col items-center"
+            >
+              <div className="inline-block p-3 rounded-full bg-gold/10 mb-6">
+                <Sparkles className="text-gold-dark" size={28} strokeWidth={1} />
+              </div>
+              <h4 className="font-serif text-[10px] tracking-[0.4em] uppercase text-gold-dark mb-4">La Fiesta</h4>
+              <h3 className="font-display text-3xl md:text-4xl mb-4 italic">Jardín Cisneros</h3>
+              <p className="font-serif text-base mb-8 max-w-xs mx-auto leading-relaxed text-ink opacity-80">
+                Camino Al Ojo de Agua <br />
+                San Pablo, Ibarrilla, León.
+              </p>
+              
+              <div className="relative p-2 bg-white shadow-xl rounded-2xl border border-gold/10 w-full mb-8">
+                <div className="w-full aspect-video rounded-xl overflow-hidden bg-neutral-100 relative">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3720.088674!2d-101.641794!3d21.187226!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x842bb948f4bc397d%3A0xa53ef4c3f969caf2!2sJard%C3%ADn%20Cisneros!5e0!3m2!1ses!2smx!4v1711311000000!5m2!1ses!2smx"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen={true}
+                    loading="lazy"
+                    className="grayscale contrast-125 brightness-95 hover:grayscale-0 transition-all duration-1000"
+                  ></iframe>
+                </div>
+              </div>
+              
+              <a 
+                href="https://www.google.com/maps/search/?api=1&query=Jardin+Cisneros+Leon+Guanajuato"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-serif text-xs tracking-[0.3em] uppercase text-gold-dark hover:text-ink transition-colors border border-gold/30 px-8 py-3 rounded-full"
+              >
+                ¿Cómo llegar?
+              </a>
+            </motion.div>
+            
           </div>
         </section>
 
