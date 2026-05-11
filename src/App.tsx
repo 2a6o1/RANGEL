@@ -180,8 +180,8 @@ export default function App() {
   const flapRotation = useTransform(smoothProgress, [0, 0.12], [0, -180]);
 
   // Card sliding out
-  const cardY = useTransform(smoothProgress, [0.08, 0.3], [0, -260]);
-  const cardScale = useTransform(smoothProgress, [0.2, 0.4], [0.9, 1]);
+  const cardY = useTransform(smoothProgress, [0.08, 0.3], [0, -420]);
+  const cardScale = useTransform(smoothProgress, [0.2, 0.4], [0.9, 1.05]);
 
   // Content - Delayed until envelope is gone, but remains "solid" (sharp transition)
   const contentOpacity = useTransform(smoothProgress, [0.4, 0.41], [0, 1]);
@@ -271,7 +271,7 @@ export default function App() {
         {/* The Envelope */}
         <motion.div
           style={{ opacity: envelopeOpacity, scale: envelopeScale }}
-          className="relative w-[90%] max-w-md aspect-[4/3] z-20"
+          className="relative w-[95%] max-w-lg aspect-[4/5] z-20"
         >
           {/* Back of Envelope */}
           <div className="absolute inset-0 bg-[#e8e2d6] border border-gold/20 shadow-md rounded-b-lg overflow-hidden">
@@ -295,11 +295,11 @@ export default function App() {
             <div className="absolute inset-0 bg-cream/60 backdrop-blur-[1px] z-0" />
 
             <div className="relative z-10 flex flex-col items-center">
-              <Heart className="text-gold-dark mb-4" size={24} fill="currentColor" />
-              <h2 className="font-display text-4xl mb-2 italic text-ink">Reserva la Fecha</h2>
-              <div className="w-12 h-[1.5px] bg-gold/40 my-4" />
-              <p className="font-serif text-2xl tracking-[0.2em] uppercase mb-1 text-ink">Rosa & Alejandro</p>
-              <p className="font-serif text-sm text-gold-dark tracking-[0.4em] uppercase font-medium">26 de Diciembre, 2026</p>
+              <Heart className="text-gold-dark mb-6" size={32} fill="currentColor" />
+              <h2 className="font-display text-4xl md:text-5xl mb-4 italic text-ink">Reserva la Fecha</h2>
+              <div className="w-16 h-[1.5px] bg-gold/40 my-6" />
+              <p className="font-serif text-2xl md:text-3xl tracking-[0.2em] uppercase mb-2 text-ink">Rosa & Alejandro</p>
+              <p className="font-serif text-base text-gold-dark tracking-[0.4em] uppercase font-medium">26 de Diciembre, 2026</p>
             </div>
           </motion.div>
 
@@ -315,10 +315,10 @@ export default function App() {
 
           {/* Bottom/Side Flaps (Visual only) */}
           <div className="absolute inset-0 z-40 pointer-events-none">
-            <svg viewBox="0 0 400 300" className="w-full h-full drop-shadow-md">
-              <path d="M0 300 L200 150 L400 300" fill="#f2ede4" stroke="#D4AF37" strokeWidth="0.5" strokeOpacity="0.2" />
-              <path d="M0 0 L200 150 L0 300" fill="#f2ede4" stroke="#D4AF37" strokeWidth="0.5" strokeOpacity="0.2" />
-              <path d="M400 0 L200 150 L400 300" fill="#f2ede4" stroke="#D4AF37" strokeWidth="0.5" strokeOpacity="0.2" />
+            <svg viewBox="0 0 400 500" className="w-full h-full drop-shadow-md">
+              <path d="M0 500 L200 250 L400 500" fill="#f2ede4" stroke="#D4AF37" strokeWidth="0.5" strokeOpacity="0.2" />
+              <path d="M0 0 L200 250 L0 500" fill="#f2ede4" stroke="#D4AF37" strokeWidth="0.5" strokeOpacity="0.2" />
+              <path d="M400 0 L200 250 L400 500" fill="#f2ede4" stroke="#D4AF37" strokeWidth="0.5" strokeOpacity="0.2" />
             </svg>
           </div>
         </motion.div>
