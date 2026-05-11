@@ -11,7 +11,10 @@ import {
   MapPin,
   ChevronDown,
   MessageSquare,
-  Sparkles
+  Sparkles,
+  Volume2,
+  VolumeX,
+  Music
 } from "lucide-react";
 import React, { useRef, useState, useEffect } from "react";
 
@@ -95,10 +98,10 @@ const TimeUnit = ({ label, value }: { label: string, value: number }) => (
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -40, opacity: 0 }}
-          transition={{ 
-            duration: 0.8, 
+          transition={{
+            duration: 0.8,
             ease: [0.16, 1, 0.3, 1], // Custom cubic-bezier for extra smoothness
-            opacity: { duration: 0.4 } 
+            opacity: { duration: 0.4 }
           }}
           className="block font-display text-4xl md:text-6xl text-ink"
         >
@@ -216,24 +219,24 @@ const InfoWizard = ({ onComplete, isCompleted }: { onComplete: () => void, isCom
   ];
 
   if (isCompleted) return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1 }}
       className="w-full max-w-5xl mx-auto"
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
-         {steps.map((s, i) => (
-           <div key={i} className="bg-white/50 backdrop-blur-sm border border-gold/10 p-8 rounded-2xl flex flex-col items-center text-center shadow-sm">
-              <div className="mb-4 opacity-50">{s.icon}</div>
-              <h5 className="font-serif text-[10px] tracking-[0.3em] uppercase text-gold-dark mb-4">{s.title}</h5>
-              <div className="scale-90">{s.content}</div>
-           </div>
-         ))}
+        {steps.map((s, i) => (
+          <div key={i} className="bg-white/50 backdrop-blur-sm border border-gold/10 p-8 rounded-2xl flex flex-col items-center text-center shadow-sm">
+            <div className="mb-4 opacity-50">{s.icon}</div>
+            <h5 className="font-serif text-[10px] tracking-[0.3em] uppercase text-gold-dark mb-4">{s.title}</h5>
+            <div className="scale-90">{s.content}</div>
+          </div>
+        ))}
       </div>
       <div className="mt-12 flex flex-col items-center opacity-40">
-         <Sparkles size={16} className="text-gold mb-2" />
-         <span className="font-serif text-[9px] tracking-[0.5em] uppercase">Información Confirmada</span>
+        <Sparkles size={16} className="text-gold mb-2" />
+        <span className="font-serif text-[9px] tracking-[0.5em] uppercase">Información Confirmada</span>
       </div>
     </motion.div>
   );
@@ -252,11 +255,11 @@ const InfoWizard = ({ onComplete, isCompleted }: { onComplete: () => void, isCom
           <div className="mb-6 p-4 rounded-full bg-gold/5 flex items-center justify-center">
             {steps[step].icon}
           </div>
-          
+
           <h4 className="font-serif text-[10px] tracking-[0.5em] uppercase text-gold-dark mb-8 text-center border-b border-gold/10 pb-2">
             {steps[step].title}
           </h4>
-          
+
           <div className="mb-10 w-full flex flex-col items-center min-h-[180px] justify-center">
             {steps[step].content}
           </div>
@@ -272,9 +275,9 @@ const InfoWizard = ({ onComplete, isCompleted }: { onComplete: () => void, isCom
           </button>
 
           <div className="absolute bottom-6 flex gap-2">
-             {[0,1,2].map(i => (
-               <div key={i} className={`w-1.5 h-1.5 rounded-full transition-colors ${i === step ? 'bg-gold' : 'bg-gold/20'}`} />
-             ))}
+            {[0, 1, 2].map(i => (
+              <div key={i} className={`w-1.5 h-1.5 rounded-full transition-colors ${i === step ? 'bg-gold' : 'bg-gold/20'}`} />
+            ))}
           </div>
         </motion.div>
       </AnimatePresence>
@@ -321,6 +324,12 @@ export default function App() {
   const [guestId, setGuestId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isInfoCompleted, setIsInfoCompleted] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+
+  // Intentar iniciar música al interactuar si el usuario lo desea
+  const toggleMusic = () => {
+    setIsMusicPlaying(!isMusicPlaying);
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -538,199 +547,250 @@ export default function App() {
               transition={{ duration: 1.2, ease: "easeOut" }}
               className="w-full flex flex-col items-center"
             >
-        {/* Locations Section (Church & Reception) */}
-        <section className="mb-24 w-full text-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-12 w-full">
-            
-            {/* Church Section */}
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="flex flex-col items-center"
-            >
-              <div className="inline-block p-3 rounded-full bg-gold/10 mb-6">
-                <MapPin className="text-gold-dark" size={28} strokeWidth={1} />
-              </div>
-              <h4 className="font-serif text-[10px] tracking-[0.4em] uppercase text-gold-dark mb-4">La Ceremonia</h4>
-              <h3 className="font-display text-3xl md:text-4xl mb-4 italic">Catedral Basílica Metropolitana</h3>
-              <p className="font-serif text-base mb-8 max-w-xs mx-auto leading-relaxed text-ink opacity-80">
-                Álvaro Obregón 112, Centro <br />
-                León de los Aldama, Gto.
-              </p>
-              
-              <div className="relative p-2 bg-white shadow-xl rounded-2xl border border-gold/10 w-full mb-8">
-                <div className="w-full aspect-video rounded-xl overflow-hidden bg-neutral-100 relative">
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14885.759664539823!2d-101.68426000000001!3d21.1238899!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x842bbf0c92a59605%3A0xf9567ed0dd2be656!2sCatedral%20-%20Bas%C3%ADlica%20Metropolitana%20de%20Nuestra%20Madre%20Sant%C3%ADsima%20de%20la%20Luz!5e0!3m2!1ses!2smx!4v1711311000000!5m2!1ses!2smx"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen={true}
-                    loading="lazy"
-                    className="grayscale contrast-125 brightness-95 hover:grayscale-0 transition-all duration-1000"
-                  ></iframe>
-                </div>
-              </div>
-              
-              <a 
-                href="https://www.google.com/maps/search/?api=1&query=Catedral+Bas%C3%ADlica+Metropolitana+de+Nuestra+Madre+Sant%C3%ADsima+de+la+Luz+León"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-serif text-xs tracking-[0.3em] uppercase text-gold-dark hover:text-ink transition-colors border border-gold/30 px-8 py-3 rounded-full"
-              >
-                ¿Cómo llegar?
-              </a>
-            </motion.div>
+              {/* Locations Section (Church & Reception) */}
+              <section className="mb-24 w-full text-center">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-12 w-full">
 
-            {/* Reception Section */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="flex flex-col items-center"
-            >
-              <div className="inline-block p-3 rounded-full bg-gold/10 mb-6">
-                <Sparkles className="text-gold-dark" size={28} strokeWidth={1} />
-              </div>
-              <h4 className="font-serif text-[10px] tracking-[0.4em] uppercase text-gold-dark mb-4">La Fiesta</h4>
-              <h3 className="font-display text-3xl md:text-4xl mb-4 italic">Jardín Cisneros</h3>
-              <p className="font-serif text-base mb-8 max-w-xs mx-auto leading-relaxed text-ink opacity-80">
-                Camino Al Ojo de Agua <br />
-                San Pablo, Ibarrilla, León.
-              </p>
-              
-              <div className="relative p-2 bg-white shadow-xl rounded-2xl border border-gold/10 w-full mb-8">
-                <div className="w-full aspect-video rounded-xl overflow-hidden bg-neutral-100 relative">
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3720.088674!2d-101.641794!3d21.187226!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x842bb948f4bc397d%3A0xa53ef4c3f969caf2!2sJard%C3%ADn%20Cisneros!5e0!3m2!1ses!2smx!4v1711311000000!5m2!1ses!2smx"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen={true}
-                    loading="lazy"
-                    className="grayscale contrast-125 brightness-95 hover:grayscale-0 transition-all duration-1000"
-                  ></iframe>
-                </div>
-              </div>
-              
-              <a 
-                href="https://www.google.com/maps/search/?api=1&query=Jardin+Cisneros+Leon+Guanajuato"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-serif text-xs tracking-[0.3em] uppercase text-gold-dark hover:text-ink transition-colors border border-gold/30 px-8 py-3 rounded-full"
-              >
-                ¿Cómo llegar?
-              </a>
-            </motion.div>
-            
-          </div>
-        </section>
-
-        {/* RSVP - Solid Action Card */}
-        <section className="mb-32 w-full max-w-lg">
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-gold-dark via-gold to-gold-light rounded-3xl opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-            <div className="relative bg-white p-12 md:p-16 rounded-3xl shadow-2xl border border-gold/10 text-center">
-              {!isRSVPed ? (
-                <>
-                  <MessageSquare className="text-gold mb-8 mx-auto" size={32} strokeWidth={1} />
-                  <h3 className="font-display text-4xl mb-6 italic">Confirmar Asistencia</h3>
-                  <p className="font-serif text-xl mb-10 text-ink leading-relaxed">
-                    Le solicitamos amablemente su confirmación antes del primero de agosto.
-                  </p>
-
-                  {/* Guest Count Selector */}
-                  <div className="mb-10 flex flex-col items-center gap-4">
-                    <p className="font-serif text-xs uppercase tracking-[0.3em] text-gold-dark">Invitados disponibles</p>
-                    <div className="flex items-center gap-8">
-                      <button
-                        onClick={() => setGuestCount(prev => Math.max(1, prev - 1))}
-                        className="w-12 h-12 rounded-full border border-gold/20 flex items-center justify-center text-gold-dark hover:bg-gold/5 transition-all active:scale-90"
-                      >
-                        <span className="text-2xl font-light">-</span>
-                      </button>
-                      <div className="flex flex-col items-center">
-                        <span className="font-display text-4xl text-ink">{guestCount}</span>
-                        <span className="text-[10px] uppercase tracking-widest text-gold/60 mt-1">
-                          {guestCount === 1 ? 'Persona' : 'Personas'}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => setGuestCount(prev => Math.min(maxGuests, prev + 1))}
-                        disabled={guestCount >= maxGuests}
-                        className={`w-12 h-12 rounded-full border border-gold/20 flex items-center justify-center text-gold-dark transition-all active:scale-90 ${guestCount >= maxGuests ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gold/5'}`}
-                      >
-                        <span className="text-2xl font-light">+</span>
-                      </button>
+                  {/* Church Section */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="flex flex-col items-center"
+                  >
+                    <div className="inline-block p-3 rounded-full bg-gold/10 mb-6">
+                      <MapPin className="text-gold-dark" size={28} strokeWidth={1} />
                     </div>
-                  </div>
-
-                  <div className="flex flex-col gap-4">
-                    <button
-                      onClick={() => handleRSVP('Aceptado')}
-                      className="w-full bg-ink text-cream font-serif tracking-[0.3em] uppercase py-5 rounded-full hover:bg-gold-dark transition-all duration-500 shadow-xl active:scale-[0.98] transform flex items-center justify-center gap-3"
-                    >
-                      <Heart size={18} fill="currentColor" />
-                      Aceptar con Gusto
-                    </button>
-                    <button
-                      onClick={() => handleRSVP('Rechazado')}
-                      className="w-full py-4 text-ink/30 font-serif text-xs tracking-[0.3em] uppercase hover:text-ink transition-colors"
-                    >
-                      Declinar con Pesar
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="relative py-12 px-6 overflow-hidden rounded-2xl min-h-[400px] flex flex-col items-center justify-center"
-                >
-                  {/* Fondo con imagen nítida */}
-                  <div
-                    className="absolute inset-0 z-0 opacity-90"
-                    style={{
-                      backgroundImage: 'url("imgs/bodaMuppet.png")',
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      filter: 'none'
-                    }}
-                  />
-
-                  {/* Tarjeta de texto (Glassmorphism) para legibilidad */}
-                  <div className="relative z-10 bg-white/40 backdrop-blur-md p-8 rounded-2xl border border-white/20 shadow-2xl flex flex-col items-center max-w-[90%]">
-                    <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                      <Heart className="text-gold-dark" size={32} fill="currentColor" />
-                    </div>
-                    <h3 className="font-display text-4xl mb-4 italic text-ink">¡Estás en la lista!</h3>
-                    <p className="font-serif text-lg text-ink leading-relaxed text-center">
-                      Hemos recibido la confirmación de {guestCount} {guestCount === 1 ? 'persona' : 'personas'}. <br />
-                      Significa mucho para nosotros que nos acompañes.
+                    <h4 className="font-serif text-[10px] tracking-[0.4em] uppercase text-gold-dark mb-4">La Ceremonia</h4>
+                    <h3 className="font-display text-3xl md:text-4xl mb-4 italic">Catedral Basílica Metropolitana</h3>
+                    <p className="font-serif text-base mb-8 max-w-xs mx-auto leading-relaxed text-ink opacity-80">
+                      Álvaro Obregón 112, Centro <br />
+                      León de los Aldama, Gto.
                     </p>
-                    <button
-                      onClick={() => setIsRSVPed(false)}
-                      className="mt-8 text-gold-dark font-serif text-[10px] tracking-[0.4em] uppercase hover:underline transition-all"
-                    >
-                      Editar Respuesta
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </div>
-          </div>
-        </section>
 
-          <footer className="pb-20 text-center opacity-40">
-            <div className="w-16 h-[1px] bg-gold mx-auto mb-10" />
-            <p className="font-display text-3xl italic mb-4">Rosa & Alejandro</p>
-            <p className="font-serif text-[10px] tracking-[0.5em] uppercase">Cancún, Quintana Roo • 2026</p>
-          </footer>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  </motion.main>
-</div>
+                    <div className="relative p-2 bg-white shadow-xl rounded-2xl border border-gold/10 w-full mb-8">
+                      <div className="w-full aspect-video rounded-xl overflow-hidden bg-neutral-100 relative">
+                        <iframe
+                          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14885.759664539823!2d-101.68426000000001!3d21.1238899!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x842bbf0c92a59605%3A0xf9567ed0dd2be656!2sCatedral%20-%20Bas%C3%ADlica%20Metropolitana%20de%20Nuestra%20Madre%20Sant%C3%ADsima%20de%20la%20Luz!5e0!3m2!1ses!2smx!4v1711311000000!5m2!1ses!2smx"
+                          width="100%"
+                          height="100%"
+                          style={{ border: 0 }}
+                          allowFullScreen={true}
+                          loading="lazy"
+                          className="grayscale contrast-125 brightness-95 hover:grayscale-0 transition-all duration-1000"
+                        ></iframe>
+                      </div>
+                    </div>
+
+                    <a
+                      href="https://www.google.com/maps/search/?api=1&query=Catedral+Bas%C3%ADlica+Metropolitana+de+Nuestra+Madre+Sant%C3%ADsima+de+la+Luz+León"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-serif text-xs tracking-[0.3em] uppercase text-gold-dark hover:text-ink transition-colors border border-gold/30 px-8 py-3 rounded-full"
+                    >
+                      ¿Cómo llegar?
+                    </a>
+                  </motion.div>
+
+                  {/* Reception Section */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="flex flex-col items-center"
+                  >
+                    <div className="inline-block p-3 rounded-full bg-gold/10 mb-6">
+                      <Sparkles className="text-gold-dark" size={28} strokeWidth={1} />
+                    </div>
+                    <h4 className="font-serif text-[10px] tracking-[0.4em] uppercase text-gold-dark mb-4">La Fiesta</h4>
+                    <h3 className="font-display text-3xl md:text-4xl mb-4 italic">Jardín Cisneros</h3>
+                    <p className="font-serif text-base mb-8 max-w-xs mx-auto leading-relaxed text-ink opacity-80">
+                      Camino Al Ojo de Agua <br />
+                      San Pablo, Ibarrilla, León.
+                    </p>
+
+                    <div className="relative p-2 bg-white shadow-xl rounded-2xl border border-gold/10 w-full mb-8">
+                      <div className="w-full aspect-video rounded-xl overflow-hidden bg-neutral-100 relative">
+                        <iframe
+                          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3720.088674!2d-101.641794!3d21.187226!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x842bb948f4bc397d%3A0xa53ef4c3f969caf2!2sJard%C3%ADn%20Cisneros!5e0!3m2!1ses!2smx!4v1711311000000!5m2!1ses!2smx"
+                          width="100%"
+                          height="100%"
+                          style={{ border: 0 }}
+                          allowFullScreen={true}
+                          loading="lazy"
+                          className="grayscale contrast-125 brightness-95 hover:grayscale-0 transition-all duration-1000"
+                        ></iframe>
+                      </div>
+                    </div>
+
+                    <a
+                      href="https://www.google.com/maps/search/?api=1&query=Jardin+Cisneros+Leon+Guanajuato"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-serif text-xs tracking-[0.3em] uppercase text-gold-dark hover:text-ink transition-colors border border-gold/30 px-8 py-3 rounded-full"
+                    >
+                      ¿Cómo llegar?
+                    </a>
+                  </motion.div>
+
+                </div>
+              </section>
+
+              {/* RSVP - Solid Action Card */}
+              <section className="mb-32 w-full max-w-lg">
+                <div className="relative group">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-gold-dark via-gold to-gold-light rounded-3xl opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                  <div className="relative bg-white p-12 md:p-16 rounded-3xl shadow-2xl border border-gold/10 text-center">
+                    {!isRSVPed ? (
+                      <>
+                        <MessageSquare className="text-gold mb-8 mx-auto" size={32} strokeWidth={1} />
+                        <h3 className="font-display text-4xl mb-6 italic">Confirmar Asistencia</h3>
+                        <p className="font-serif text-xl mb-10 text-ink leading-relaxed">
+                          Le solicitamos amablemente su confirmación antes del primero de agosto.
+                        </p>
+
+                        {/* Guest Count Selector */}
+                        <div className="mb-10 flex flex-col items-center gap-4">
+                          <p className="font-serif text-xs uppercase tracking-[0.3em] text-gold-dark">Invitados disponibles</p>
+                          <div className="flex items-center gap-8">
+                            <button
+                              onClick={() => setGuestCount(prev => Math.max(1, prev - 1))}
+                              className="w-12 h-12 rounded-full border border-gold/20 flex items-center justify-center text-gold-dark hover:bg-gold/5 transition-all active:scale-90"
+                            >
+                              <span className="text-2xl font-light">-</span>
+                            </button>
+                            <div className="flex flex-col items-center">
+                              <span className="font-display text-4xl text-ink">{guestCount}</span>
+                              <span className="text-[10px] uppercase tracking-widest text-gold/60 mt-1">
+                                {guestCount === 1 ? 'Persona' : 'Personas'}
+                              </span>
+                            </div>
+                            <button
+                              onClick={() => setGuestCount(prev => Math.min(maxGuests, prev + 1))}
+                              disabled={guestCount >= maxGuests}
+                              className={`w-12 h-12 rounded-full border border-gold/20 flex items-center justify-center text-gold-dark transition-all active:scale-90 ${guestCount >= maxGuests ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gold/5'}`}
+                            >
+                              <span className="text-2xl font-light">+</span>
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-4">
+                          <button
+                            onClick={() => handleRSVP('Aceptado')}
+                            className="w-full bg-ink text-cream font-serif tracking-[0.3em] uppercase py-5 rounded-full hover:bg-gold-dark transition-all duration-500 shadow-xl active:scale-[0.98] transform flex items-center justify-center gap-3"
+                          >
+                            <Heart size={18} fill="currentColor" />
+                            Aceptar con Gusto
+                          </button>
+                          <button
+                            onClick={() => handleRSVP('Rechazado')}
+                            className="w-full py-4 text-ink/30 font-serif text-xs tracking-[0.3em] uppercase hover:text-ink transition-colors"
+                          >
+                            Declinar con Pesar
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="relative py-12 px-6 overflow-hidden rounded-2xl min-h-[400px] flex flex-col items-center justify-center"
+                      >
+                        {/* Fondo con imagen nítida */}
+                        <div
+                          className="absolute inset-0 z-0 opacity-90"
+                          style={{
+                            backgroundImage: 'url("imgs/bodaMuppet.png")',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            filter: 'none'
+                          }}
+                        />
+
+                        {/* Tarjeta de texto (Glassmorphism) para legibilidad */}
+                        <div className="relative z-10 bg-white/40 backdrop-blur-md p-8 rounded-2xl border border-white/20 shadow-2xl flex flex-col items-center max-w-[90%]">
+                          <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                            <Heart className="text-gold-dark" size={32} fill="currentColor" />
+                          </div>
+                          <h3 className="font-display text-4xl mb-4 italic text-ink">¡Estás en la lista!</h3>
+                          <p className="font-serif text-lg text-ink leading-relaxed text-center">
+                            Hemos recibido la confirmación de {guestCount} {guestCount === 1 ? 'persona' : 'personas'}. <br />
+                            Significa mucho para nosotros que nos acompañes.
+                          </p>
+                          <button
+                            onClick={() => setIsRSVPed(false)}
+                            className="mt-8 text-gold-dark font-serif text-[10px] tracking-[0.4em] uppercase hover:underline transition-all"
+                          >
+                            Editar Respuesta
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
+              </section>
+
+              <footer className="pb-20 text-center opacity-40">
+                <div className="w-16 h-[1px] bg-gold mx-auto mb-10" />
+                <p className="font-display text-3xl italic mb-4">Rosa & Alejandro</p>
+                <p className="font-serif text-[10px] tracking-[0.5em] uppercase">León, Guanajuato • 2026</p>
+              </footer>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.main>
+
+    {/* Music Control / Background Music */}
+    <div className="fixed bottom-6 right-6 z-[100]">
+      <motion.button
+        onClick={toggleMusic}
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileActive={{ scale: 0.9 }}
+        className="bg-white/40 backdrop-blur-md border border-gold/20 p-4 rounded-full shadow-2xl text-gold-dark relative group"
+      >
+        <AnimatePresence mode="wait">
+          {isMusicPlaying ? (
+            <motion.div
+              key="playing"
+              initial={{ opacity: 0, rotate: -45 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              exit={{ opacity: 0, rotate: 45 }}
+            >
+              <Volume2 size={24} />
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-gold rounded-full animate-ping" />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="muted"
+              initial={{ opacity: 0, rotate: -45 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              exit={{ opacity: 0, rotate: 45 }}
+            >
+              <VolumeX size={24} className="opacity-50" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-ink/80 text-cream text-[10px] tracking-widest uppercase px-3 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+          {isMusicPlaying ? "Pausar música" : "Reproducir música"}
+        </div>
+      </motion.button>
+    </div>
+
+    {/* Hidden YouTube Player */}
+    {isMusicPlaying && (
+      <div className="fixed -top-full -left-full opacity-0 pointer-events-none">
+        <iframe
+          width="200"
+          height="200"
+          src="https://www.youtube.com/embed/M-AMu_iAcf8?autoplay=1&loop=1&playlist=M-AMu_iAcf8"
+          allow="autoplay"
+          title="Background Music"
+        ></iframe>
+      </div>
+    )}
+    </div>
   );
 }
