@@ -84,6 +84,34 @@ const FloatingBackground = () => {
   );
 };
 
+// Componente para cada unidad de tiempo (Días, Horas, etc.)
+// Movido fuera para evitar re-montajes innecesarios y asegurar que solo el número que cambia se anime
+const TimeUnit = ({ label, value }: { label: string, value: number }) => (
+  <div className="flex flex-col items-center min-w-[70px] md:min-w-[90px]">
+    <div className="relative h-14 w-full flex items-center justify-center overflow-hidden">
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={value}
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -40, opacity: 0 }}
+          transition={{ 
+            duration: 0.8, 
+            ease: [0.16, 1, 0.3, 1], // Custom cubic-bezier for extra smoothness
+            opacity: { duration: 0.4 } 
+          }}
+          className="block font-display text-4xl md:text-6xl text-ink"
+        >
+          {value.toString().padStart(2, '0')}
+        </motion.span>
+      </AnimatePresence>
+    </div>
+    <span className="font-serif text-[10px] tracking-[0.4em] uppercase text-gold-dark mt-3 opacity-70">
+      {label}
+    </span>
+  </div>
+);
+
 // Componente elegante para la cuenta regresiva
 const CountdownTimer = () => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -96,11 +124,15 @@ const CountdownTimer = () => {
       const difference = targetDate - now;
 
       if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((difference % (1000 * 60)) / 1000)
+        const d = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const h = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((difference % (1000 * 60)) / 1000);
+
+        setTimeLeft(prev => {
+          // Solo actualizamos si algo cambió para mayor eficiencia (aunque React lo hace solo en objetos)
+          if (prev.days === d && prev.hours === h && prev.minutes === m && prev.seconds === s) return prev;
+          return { days: d, hours: h, minutes: m, seconds: s };
         });
       }
     };
@@ -110,46 +142,25 @@ const CountdownTimer = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const TimeUnit = ({ label, value }: { label: string, value: number }) => (
-    <div className="flex flex-col items-center min-w-[60px] md:min-w-[80px]">
-      <div className="relative h-12 flex items-center justify-center">
-        <AnimatePresence mode="popLayout">
-          <motion.span
-            key={value}
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -20, opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="block font-display text-4xl md:text-5xl text-ink"
-          >
-            {value.toString().padStart(2, '0')}
-          </motion.span>
-        </AnimatePresence>
-      </div>
-      <span className="font-serif text-[10px] tracking-[0.3em] uppercase text-gold-dark mt-2">
-        {label}
-      </span>
-    </div>
-  );
-
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
-      transition={{ duration: 1 }}
-      className="w-full flex justify-center items-center gap-2 md:gap-4 py-4"
+      transition={{ duration: 1.5 }}
+      className="w-full flex justify-center items-center gap-1 md:gap-3 py-6"
     >
       <TimeUnit label="Días" value={timeLeft.days} />
-      <div className="w-[1px] h-8 bg-gold/30 mt-[-15px]" />
+      <div className="w-[1px] h-10 bg-gold/20 mt-[-20px] mx-1" />
       <TimeUnit label="Horas" value={timeLeft.hours} />
-      <div className="w-[1px] h-8 bg-gold/30 mt-[-15px]" />
+      <div className="w-[1px] h-10 bg-gold/20 mt-[-20px] mx-1" />
       <TimeUnit label="Minutos" value={timeLeft.minutes} />
-      <div className="w-[1px] h-8 bg-gold/30 mt-[-15px]" />
+      <div className="w-[1px] h-10 bg-gold/20 mt-[-20px] mx-1" />
       <TimeUnit label="Segundos" value={timeLeft.seconds} />
     </motion.div>
   );
 };
+
 
 export default function App() {
   const containerRef = useRef<HTMLDivElement>(null);
