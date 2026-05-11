@@ -84,6 +84,73 @@ const FloatingBackground = () => {
   );
 };
 
+// Componente elegante para la cuenta regresiva
+const CountdownTimer = () => {
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    const targetDate = new Date("2026-12-26T16:00:00").getTime();
+
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((difference % (1000 * 60)) / 1000)
+        });
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const TimeUnit = ({ label, value }: { label: string, value: number }) => (
+    <div className="flex flex-col items-center min-w-[60px] md:min-w-[80px]">
+      <div className="relative h-12 flex items-center justify-center">
+        <AnimatePresence mode="popLayout">
+          <motion.span
+            key={value}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="block font-display text-4xl md:text-5xl text-ink"
+          >
+            {value.toString().padStart(2, '0')}
+          </motion.span>
+        </AnimatePresence>
+      </div>
+      <span className="font-serif text-[10px] tracking-[0.3em] uppercase text-gold-dark mt-2">
+        {label}
+      </span>
+    </div>
+  );
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 1 }}
+      className="w-full flex justify-center items-center gap-2 md:gap-4 py-4"
+    >
+      <TimeUnit label="Días" value={timeLeft.days} />
+      <div className="w-[1px] h-8 bg-gold/30 mt-[-15px]" />
+      <TimeUnit label="Horas" value={timeLeft.hours} />
+      <div className="w-[1px] h-8 bg-gold/30 mt-[-15px]" />
+      <TimeUnit label="Minutos" value={timeLeft.minutes} />
+      <div className="w-[1px] h-8 bg-gold/30 mt-[-15px]" />
+      <TimeUnit label="Segundos" value={timeLeft.seconds} />
+    </motion.div>
+  );
+};
+
 export default function App() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -283,7 +350,7 @@ export default function App() {
             </h1>
           </div>
           <p className="font-serif text-xl md:text-2xl tracking-[0.2em] uppercase text-ink max-w-md mx-auto leading-relaxed">
-            Tienen el honor de invitarle a la celebración de su boda aaa
+            Tienen el honor de invitarle a la celebración de su boda.
           </p>
         </header>
 
@@ -300,6 +367,29 @@ export default function App() {
                 "Su presencia es el mejor regalo que podríamos recibir. Esperamos compartir este gran momento con usted."
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* Countdown Timer Section */}
+        <div className="mb-24 w-full flex flex-col items-center">
+          <motion.div
+            initial={{ scale: 0 }}
+            whileInView={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+            className="mb-8"
+          >
+            <Sparkles className="text-gold/60" size={24} strokeWidth={1} />
+          </motion.div>
+
+          <h4 className="font-serif text-[10px] tracking-[0.5em] uppercase text-gold-dark mb-10 text-center">
+            Faltan solo
+          </h4>
+
+          <CountdownTimer />
+
+          <div className="mt-12 flex flex-col items-center">
+            <div className="w-24 h-[0.5px] bg-gradient-to-r from-transparent via-gold to-transparent" />
+            <p className="font-serif italic text-gold-dark mt-4 text-sm tracking-widest">Para nuestro gran encuentro</p>
           </div>
         </div>
 
