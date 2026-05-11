@@ -324,7 +324,7 @@ export default function App() {
   const [guestId, setGuestId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isInfoCompleted, setIsInfoCompleted] = useState(false);
-  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(true);
 
   // Intentar iniciar música al interactuar si el usuario lo desea
   const toggleMusic = () => {
