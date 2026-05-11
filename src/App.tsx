@@ -214,7 +214,7 @@ const InfoWizard = ({ onComplete, isCompleted }: { onComplete: () => void, isCom
           </p>
         </div>
       ),
-      button: "Confirmar Lectura"
+      button: "Continuar"
     }
   ];
 
@@ -324,7 +324,7 @@ export default function App() {
   const [guestId, setGuestId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isInfoCompleted, setIsInfoCompleted] = useState(false);
-  const [isMusicPlaying, setIsMusicPlaying] = useState(true);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
   // Intentar iniciar música al interactuar si el usuario lo desea
   const toggleMusic = () => {
@@ -741,56 +741,56 @@ export default function App() {
         </AnimatePresence>
       </motion.main>
 
-    {/* Music Control / Background Music */}
-    <div className="fixed bottom-6 right-6 z-[100]">
-      <motion.button
-        onClick={toggleMusic}
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileActive={{ scale: 0.9 }}
-        className="bg-white/40 backdrop-blur-md border border-gold/20 p-4 rounded-full shadow-2xl text-gold-dark relative group"
-      >
-        <AnimatePresence mode="wait">
-          {isMusicPlaying ? (
-            <motion.div
-              key="playing"
-              initial={{ opacity: 0, rotate: -45 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              exit={{ opacity: 0, rotate: 45 }}
-            >
-              <Volume2 size={24} />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-gold rounded-full animate-ping" />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="muted"
-              initial={{ opacity: 0, rotate: -45 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              exit={{ opacity: 0, rotate: 45 }}
-            >
-              <VolumeX size={24} className="opacity-50" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <div className="absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-ink/80 text-cream text-[10px] tracking-widest uppercase px-3 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-          {isMusicPlaying ? "Pausar música" : "Reproducir música"}
-        </div>
-      </motion.button>
-    </div>
-
-    {/* Hidden YouTube Player */}
-    {isMusicPlaying && (
-      <div className="fixed -top-full -left-full opacity-0 pointer-events-none">
-        <iframe
-          width="200"
-          height="200"
-          src="https://www.youtube.com/embed/M-AMu_iAcf8?autoplay=1&loop=1&playlist=M-AMu_iAcf8"
-          allow="autoplay"
-          title="Background Music"
-        ></iframe>
+      {/* Music Control / Background Music */}
+      <div className="fixed bottom-6 right-6 z-[100]">
+        <motion.button
+          onClick={toggleMusic}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          whileHover={{ scale: 1.1 }}
+          whileActive={{ scale: 0.9 }}
+          className="bg-white/40 backdrop-blur-md border border-gold/20 p-4 rounded-full shadow-2xl text-gold-dark relative group"
+        >
+          <AnimatePresence mode="wait">
+            {isMusicPlaying ? (
+              <motion.div
+                key="playing"
+                initial={{ opacity: 0, rotate: -45 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: 45 }}
+              >
+                <Volume2 size={24} />
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-gold rounded-full animate-ping" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="muted"
+                initial={{ opacity: 0, rotate: -45 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: 45 }}
+              >
+                <VolumeX size={24} className="opacity-50" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <div className="absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-ink/80 text-cream text-[10px] tracking-widest uppercase px-3 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            {isMusicPlaying ? "Pausar música" : "Reproducir música"}
+          </div>
+        </motion.button>
       </div>
-    )}
+
+      {/* Hidden YouTube Player */}
+      {isMusicPlaying && (
+        <div className="fixed -top-full -left-full opacity-0 pointer-events-none">
+          <iframe
+            width="200"
+            height="200"
+            src="https://www.youtube.com/embed/M-AMu_iAcf8?autoplay=1&loop=1&playlist=M-AMu_iAcf8"
+            allow="autoplay"
+            title="Background Music"
+          ></iframe>
+        </div>
+      )}
     </div>
   );
 }
