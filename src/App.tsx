@@ -400,15 +400,14 @@ export default function App() {
             <div className="absolute inset-0 bg-gradient-to-b from-black/5 to-transparent" />
           </div>
 
-          {/* The Invitation Card (Inside) */}
           <motion.div
             style={{
               y: cardY,
               scale: cardScale,
               zIndex: cardZIndex,
               backgroundImage: 'url("imgs/resale.png")',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center 40%'
+              backgroundSize: '115% auto',
+              backgroundPosition: 'center 25%'
             }}
             className="absolute inset-x-2 top-2 bottom-2 bg-white shadow-lg rounded-sm p-8 flex flex-col items-center justify-center text-center border border-gold/10 pointer-events-auto relative overflow-hidden"
           >
