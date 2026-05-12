@@ -439,12 +439,19 @@ export default function App() {
               y: cardY,
               scale: cardScale,
               zIndex: cardZIndex,
-              backgroundImage: 'url("imgs/15.jpeg")',
-              backgroundSize: '115% auto',
-              backgroundPosition: 'center 25%'
             }}
             className="absolute inset-x-2 top-2 bottom-2 bg-white shadow-lg rounded-sm p-8 flex flex-col items-center justify-center text-center border border-gold/10 pointer-events-auto relative overflow-hidden"
           >
+            {/* Imagen de fondo con filtro B&N refinado */}
+            <div 
+              className="absolute inset-0 z-0 scale-110"
+              style={{
+                backgroundImage: 'url("imgs/15.jpeg")',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center 25%',
+                filter: 'grayscale(100%) brightness(1.05) contrast(0.95) opacity(0.8)'
+              }}
+            />
             {/* Overlay para legibilidad */}
             <div className="absolute inset-0 bg-cream/60 backdrop-blur-[1px] z-0" />
 
