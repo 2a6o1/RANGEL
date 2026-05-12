@@ -628,8 +628,9 @@ export default function App() {
               transition={{ duration: 1.2, ease: "easeOut" }}
               className="w-full flex flex-col items-center"
             >
-              {/* Nueva Sección Works */}
+              {/* Nueva Sección Works 
               <WorksSection />
+              */}
 
               {/* Locations Section (Church & Reception) */}
               <section className="mb-24 w-full text-center">
