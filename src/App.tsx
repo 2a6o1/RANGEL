@@ -285,6 +285,55 @@ const InfoWizard = ({ onComplete, isCompleted }: { onComplete: () => void, isCom
   );
 };
 
+// Nuevo Componente: Sección INVPIX / Works
+const WorksSection = () => {
+  return (
+    <div className="w-full max-w-6xl mx-auto px-4 py-20 pb-40">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        className="gold-border bg-white shadow-2xl rounded-[3rem] p-16 md:p-32 flex flex-col items-center justify-center text-center relative overflow-hidden"
+      >
+        {/* Fondo decorativo sutil */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,var(--color-gold)_0%,transparent_70%)]" />
+        </div>
+
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          className="relative z-10"
+        >
+          <div className="flex items-center justify-center gap-4 mb-12">
+            <div className="w-12 h-[1px] bg-gold/30" />
+            <span className="font-serif text-[10px] tracking-[0.6em] uppercase text-gold-dark italic">
+              / RANGEL / INVPIX /
+            </span>
+            <div className="w-12 h-[1px] bg-gold/30" />
+          </div>
+
+          <h2 className="font-display text-7xl md:text-9xl mb-8 gold-gradient">
+            Works
+          </h2>
+
+          <div className="flex flex-col items-center">
+            <Sparkles className="text-gold/40 mb-8" size={32} strokeWidth={1} />
+            <p className="font-serif text-xl md:text-2xl text-ink/60 max-w-lg mx-auto leading-relaxed">
+              Capturando la esencia de una historia que apenas comienza.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Adornos en esquinas */}
+        <div className="absolute top-12 left-12 opacity-20"><Sparkles size={16} /></div>
+        <div className="absolute bottom-12 right-12 opacity-20"><Sparkles size={16} /></div>
+      </motion.div>
+    </div>
+  );
+};
+
 export default function App() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -443,12 +492,12 @@ export default function App() {
             className="absolute inset-x-2 top-2 bottom-2 bg-white shadow-lg rounded-sm p-8 flex flex-col items-center justify-center text-center border border-gold/10 pointer-events-auto relative overflow-hidden"
           >
             {/* Imagen de fondo con filtro B&N refinado */}
-            <div 
+            <div
               className="absolute inset-0 z-0 scale-110"
               style={{
                 backgroundImage: 'url("imgs/15.jpeg")',
                 backgroundSize: 'cover',
-                backgroundPosition: 'center 25%',
+                backgroundPosition: 'center 25% bottom 100px',
                 filter: 'grayscale(100%) brightness(1.05) contrast(0.95) opacity(0.8)'
               }}
             />
@@ -579,6 +628,9 @@ export default function App() {
               transition={{ duration: 1.2, ease: "easeOut" }}
               className="w-full flex flex-col items-center"
             >
+              {/* Nueva Sección Works */}
+              <WorksSection />
+
               {/* Locations Section (Church & Reception) */}
               <section className="mb-24 w-full text-center">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-12 w-full">
