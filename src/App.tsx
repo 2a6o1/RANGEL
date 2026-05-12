@@ -336,16 +336,23 @@ export default function App() {
       if (!isMusicPlaying) {
         setIsMusicPlaying(true);
       }
+      // Limpiar todos los listeners una vez activado
       window.removeEventListener('mousedown', handleFirstInteraction);
       window.removeEventListener('touchstart', handleFirstInteraction);
+      window.removeEventListener('wheel', handleFirstInteraction);
+      window.removeEventListener('touchmove', handleFirstInteraction);
     };
 
     window.addEventListener('mousedown', handleFirstInteraction);
     window.addEventListener('touchstart', handleFirstInteraction);
+    window.addEventListener('wheel', handleFirstInteraction);
+    window.addEventListener('touchmove', handleFirstInteraction);
 
     return () => {
       window.removeEventListener('mousedown', handleFirstInteraction);
       window.removeEventListener('touchstart', handleFirstInteraction);
+      window.removeEventListener('wheel', handleFirstInteraction);
+      window.removeEventListener('touchmove', handleFirstInteraction);
     };
   }, [isMusicPlaying]);
 
