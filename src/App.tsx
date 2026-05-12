@@ -20,7 +20,7 @@ import React, { useRef, useState, useEffect } from "react";
 
 // Componente para las imágenes flotantes de fondo
 const FloatingBackground = () => {
-  const images = ["imgs/autofoto.png", "imgs/bodaMuppet.png", "imgs/pose2.png", "imgs/resale.png"];
+  const images = ["imgs/autofoto.png", "imgs/bodaMuppet.png", "imgs/pose2.png", "imgs/resale.png", "imgs/12.png", "imgs/13.png", "imgs/14.png", "imgs/15.png", "imgs/16.png", "imgs/17.png"];
   const [items, setItems] = React.useState<{ id: number, src: string, x: number, y: number, size: number }[]>([]);
 
   React.useEffect(() => {
