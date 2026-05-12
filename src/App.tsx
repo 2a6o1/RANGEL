@@ -441,7 +441,7 @@ export default function App() {
 
 
   const handleRSVP = async (status: 'Aceptado' | 'Rechazado') => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    const apiUrl = import.meta.env.VITE_API_URL || '';
 
     setIsLoading(true);
     try {
