@@ -1,8 +1,3 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import { motion, useScroll, useSpring, useTransform, AnimatePresence } from "motion/react";
 import {
   Heart,
@@ -17,6 +12,98 @@ import {
   Music
 } from "lucide-react";
 import React, { useRef, useState, useEffect } from "react";
+
+// --- LÓGICA DE GOOGLE SHEETS DIRECTA (SIN BACKEND) ---
+// ADVERTENCIA: Exponer la Private Key en el frontend es inseguro. 
+// Se implementa aquí porque el usuario indicó que no tienen API backend y usaban estas credenciales anteriormente.
+
+async function getGoogleAccessToken() {
+  const email = import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  const keyPEM = import.meta.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+  
+  if (!email || !keyPEM) throw new Error("Faltan credenciales de Google en el .env");
+
+  // 1. Crear Header y Claim Set
+  const header = { alg: "RS256", typ: "JWT" };
+  const now = Math.floor(Date.now() / 1000);
+  const claimSet = {
+    iss: email,
+    scope: "https://www.googleapis.com/auth/spreadsheets",
+    aud: "https://oauth2.googleapis.com/token",
+    exp: now + 3600,
+    iat: now
+  };
+
+  const base64UrlEncode = (obj: any) => 
+    btoa(JSON.stringify(obj)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+
+  const encodedHeader = base64UrlEncode(header);
+  const encodedClaimSet = base64UrlEncode(claimSet);
+  const signatureInput = `${encodedHeader}.${encodedClaimSet}`;
+
+  // 2. Firmar con SubtleCrypto
+  // Extraer el contenido base64 del PEM
+  const pemHeader = "-----BEGIN PRIVATE KEY-----";
+  const pemFooter = "-----END PRIVATE KEY-----";
+  const pemContents = keyPEM.substring(keyPEM.indexOf(pemHeader) + pemHeader.length, keyPEM.indexOf(pemFooter));
+  const binaryDerString = window.atob(pemContents.replace(/\s/g, ""));
+  const binaryDer = new Uint8Array(binaryDerString.length);
+  for (let i = 0; i < binaryDerString.length; i++) binaryDer[i] = binaryDerString.charCodeAt(i);
+
+  const cryptoKey = await window.crypto.subtle.importKey(
+    "pkcs8",
+    binaryDer.buffer,
+    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+
+  const signature = await window.crypto.subtle.sign(
+    "RSASSA-PKCS1-v1_5",
+    cryptoKey,
+    new TextEncoder().encode(signatureInput)
+  );
+
+  const encodedSignature = btoa(String.fromCharCode(...new Uint8Array(signature)))
+    .replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+
+  const jwt = `${signatureInput}.${encodedSignature}`;
+
+  // 3. Obtener el Token
+  const response = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
+  });
+
+  const data = await response.json();
+  if (data.error) throw new Error(`Error de Google Auth: ${data.error_description || data.error}`);
+  return data.access_token;
+}
+
+async function fetchFromSheets(range: string) {
+  const token = await getGoogleAccessToken();
+  const spreadsheetId = import.meta.env.VITE_SPREADSHEET_ID;
+  const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.json();
+}
+
+async function updateSheets(range: string, values: any[][]) {
+  const token = await getGoogleAccessToken();
+  const spreadsheetId = import.meta.env.VITE_SPREADSHEET_ID;
+  const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?valueInputOption=USER_ENTERED`, {
+    method: "PUT",
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ values })
+  });
+  return response.json();
+}
+// ---------------------------------------------------
 
 // Componente para las imágenes flotantes de fondo
 const FloatingBackground = () => {
@@ -412,28 +499,37 @@ export default function App() {
       setGuestId(id);
       setIsLoading(true);
 
-      const apiUrl = import.meta.env.VITE_API_URL || '';
-
-      fetch(`${apiUrl}/api/guest/${id}`)
-        .then(res => res.json())
+      // Llamada directa a Google Sheets API
+      fetchFromSheets('INVITADOS!A:Z')
         .then(data => {
-          console.log("[Frontend] Datos recibidos:", data);
-          if (data.nombre) {
-            setGuestName(data.nombre);
-            setMaxGuests(data.integrantes);
+          console.log("[Frontend] Datos de Sheets recibidos:", data);
+          const rows = data.values;
+          if (!rows) throw new Error("No hay datos en la hoja");
 
-            // Si ya tiene una respuesta guardada, cargamos el conteo y mostramos vista de éxito
-            if (data.estatus === 'Aceptada' || data.estatus === 'No aceptada') {
+          // Buscamos el invitado por ID en la Columna J (índice 9)
+          const guestRow = rows.find((row: any) => {
+            const rowId = row[9] ? String(row[9]).trim() : "";
+            return rowId === id;
+          });
+
+          if (guestRow) {
+            setGuestName(guestRow[2] || guestRow[1] || "Invitado");
+            setMaxGuests(parseInt(guestRow[8]) || 1);
+
+            const estatus = guestRow[10];
+            const confirmados = guestRow[11];
+
+            if (estatus === 'Aceptada' || estatus === 'No aceptada') {
               setIsRSVPed(true);
-              if (data.confirmados !== undefined) setGuestCount(data.confirmados);
+              if (confirmados !== undefined) setGuestCount(parseInt(confirmados));
             } else {
-              setGuestCount(data.integrantes); // Por defecto el máximo
+              setGuestCount(parseInt(guestRow[8]) || 1);
             }
           }
           setIsLoading(false);
         })
         .catch(err => {
-          console.error("Error cargando invitado:", err);
+          console.error("Error cargando invitado desde Sheets:", err);
           setIsLoading(false);
         });
     }
@@ -441,26 +537,29 @@ export default function App() {
 
 
   const handleRSVP = async (status: 'Aceptado' | 'Rechazado') => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-
     setIsLoading(true);
     try {
-      await fetch(`${apiUrl}/api/rsvp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: guestId,
-          status,
-          guestCount: status === 'Aceptado' ? guestCount : 0
-        })
-      });
+      // 1. Primero necesitamos encontrar el índice de la fila
+      const data = await fetchFromSheets('INVITADOS!J:J');
+      const rows = data.values || [];
+      const rowIndex = rows.findIndex((row: any) => row[0] === guestId);
+      
+      if (rowIndex === -1) throw new Error("Invitado no encontrado");
+      const realRowIndex = rowIndex + 1;
+
+      const finalStatus = status === 'Aceptado' ? 'Aceptada' : 'No aceptada';
+      const finalCount = status === 'Aceptado' ? guestCount : 0;
+
+      // 2. Actualizar las columnas K y L (índices 10 y 11, pero en rango A1 es K y L)
+      await updateSheets(`INVITADOS!K${realRowIndex}:L${realRowIndex}`, [[finalStatus, finalCount]]);
+
       setIsRSVPed(true);
       if (status === 'Rechazado') {
         alert("Sentimos que no puedas asistir. ¡Gracias por avisarnos!");
       }
-    } catch (err) {
-      console.error("Error al confirmar:", err);
-      alert("Hubo un error al guardar tu respuesta. Por favor intenta de nuevo.");
+    } catch (err: any) {
+      console.error("Error al confirmar en Sheets:", err);
+      alert(`Hubo un error al guardar tu respuesta: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
