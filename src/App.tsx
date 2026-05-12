@@ -439,7 +439,7 @@ export default function App() {
               y: cardY,
               scale: cardScale,
               zIndex: cardZIndex,
-              backgroundImage: 'url("imgs/resale.png")',
+              backgroundImage: 'url("imgs/15.jpeg")',
               backgroundSize: '115% auto',
               backgroundPosition: 'center 25%'
             }}
