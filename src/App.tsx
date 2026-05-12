@@ -326,10 +326,28 @@ export default function App() {
   const [isInfoCompleted, setIsInfoCompleted] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
-  // Intentar iniciar música al interactuar si el usuario lo desea
   const toggleMusic = () => {
     setIsMusicPlaying(!isMusicPlaying);
   };
+
+  // Activar música al primer clic/interacción global para saltarse bloqueos de navegador
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      if (!isMusicPlaying) {
+        setIsMusicPlaying(true);
+      }
+      window.removeEventListener('mousedown', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+
+    window.addEventListener('mousedown', handleFirstInteraction);
+    window.addEventListener('touchstart', handleFirstInteraction);
+
+    return () => {
+      window.removeEventListener('mousedown', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+  }, [isMusicPlaying]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -484,7 +502,7 @@ export default function App() {
           <p className="font-serif italic text-xl text-gold-dark mb-6 tracking-wide">Junto a sus familias</p>
           <div className="relative inline-block mb-8">
             <h1 className="font-display text-6xl md:text-8xl leading-tight tracking-tighter">
-              Rosa Gutierrez <br />
+              Rosa Rodriguez <br />
               <span className="text-gold italic font-serif text-4xl md:text-5xl block my-2">&</span>
               Alejandro Estrada
             </h1>
