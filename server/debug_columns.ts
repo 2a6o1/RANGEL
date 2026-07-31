@@ -15,7 +15,7 @@ async function debug() {
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'INVITADOS!A1:H5', // Leemos las primeras 5 filas
+      range: 'INVITACIONES!A1:H5', // Leemos las primeras 5 filas
     });
 
     const rows = response.data.values || [];
