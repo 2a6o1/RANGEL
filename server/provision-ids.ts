@@ -23,11 +23,11 @@ function generateCustomId(length = 6) {
 
 async function provisionJ() {
   try {
-    console.log("🔍 Escaneando columna J en INVITACIONES (desde fila 5)...");
+    console.log("🔍 Escaneando columna J en INVITADOS (desde fila 5)...");
     
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'INVITACIONES!A1:J500', 
+      range: 'INVITADOS!A1:J500', 
     });
 
     const rows = (response.data.values || []) as string[][];
@@ -41,7 +41,7 @@ async function provisionJ() {
         if (name && (!currentIdInJ || currentIdInJ.trim() === "" || currentIdInJ.includes('+'))) {
             const newId = generateCustomId(6);
             updates.push({
-                range: `INVITACIONES!J${i + 1}`,
+                range: `INVITADOS!J${i + 1}`,
                 values: [[newId]]
             });
         }

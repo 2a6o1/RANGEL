@@ -14,7 +14,7 @@ const spreadsheetId = process.env.SPREADSHEET_ID;
 async function check() {
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: 'INVITACIONES!A5:J6', 
+    range: 'INVITADOS!A5:J6', 
   });
   const rows = response.data.values || [];
   rows.forEach((row, i) => {

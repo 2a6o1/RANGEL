@@ -15,7 +15,7 @@ async function checkId() {
   const targetId = "4cc868";
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: 'INVITACIONES!A1:J200', 
+    range: 'INVITADOS!A1:J200', 
   });
   const rows = response.data.values || [];
   const guestRow = rows.find(row => row[9] === targetId);

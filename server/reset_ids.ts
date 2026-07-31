@@ -25,7 +25,7 @@ async function resetAllIds() {
     console.log("🧹 Iniciando reseteo total de IDs en Columna J...");
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'INVITACIONES!A5:J200', 
+      range: 'INVITADOS!A5:J200', 
     });
 
     const rows = (response.data.values || []) as string[][];
@@ -37,7 +37,7 @@ async function resetAllIds() {
         if (name) {
             const newId = generateCustomId(6);
             updates.push({
-                range: `INVITACIONES!J${i + 5}`,
+                range: `INVITADOS!J${i + 5}`,
                 values: [[newId]]
             });
         }

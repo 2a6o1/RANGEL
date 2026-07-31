@@ -334,6 +334,56 @@ const WorksSection = () => {
   );
 };
 
+// Sección: Lista de invitados — SOLO visible si el usuario aceptó
+const GuestListSection = ({ guestName, guestCount }: { guestName: string; guestCount: number }) => (
+  <motion.section
+    initial={{ opacity: 0, y: 60 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+    className="w-full max-w-2xl mx-auto px-4 py-20"
+  >
+    <div className="gold-border bg-white shadow-2xl rounded-[2.5rem] p-12 md:p-20 flex flex-col items-center text-center relative overflow-hidden">
+      {/* Decorative background */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,var(--color-gold)_0%,transparent_70%)]" />
+      </div>
+
+      {/* Top ornament */}
+      <div className="flex items-center justify-center gap-4 mb-8">
+        <div className="w-16 h-[1px] bg-gold/30" />
+        <Heart className="text-gold-dark/60" size={16} />
+        <div className="w-16 h-[1px] bg-gold/30" />
+      </div>
+
+      <p className="font-serif text-[10px] tracking-[0.6em] uppercase text-gold-dark mb-4">
+        Confirmado
+      </p>
+
+      <h2 className="font-display text-5xl md:text-6xl mb-6 italic text-ink">
+        {guestName}
+      </h2>
+
+      <div className="w-16 h-[1.5px] bg-gold/40 my-6" />
+
+      <p className="font-serif text-lg text-gold-dark italic mb-2">
+        en compañía de
+      </p>
+
+      <p className="font-display text-4xl md:text-5xl text-ink mb-8">
+        {guestCount} {guestCount === 1 ? 'Persona' : 'Personas'}
+      </p>
+
+      {/* Decorative bottom ornament */}
+      <div className="flex items-center justify-center gap-4 mt-4 opacity-40">
+        <Sparkles size={14} className="text-gold" />
+        <div className="w-12 h-[1px] bg-gold" />
+        <Sparkles size={14} className="text-gold" />
+      </div>
+    </div>
+  </motion.section>
+);
+
 export default function App() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -367,6 +417,7 @@ export default function App() {
   const cardZIndex = useTransform(smoothProgress, [0.08, 0.2], [10, 50]);
 
   const [isRSVPed, setIsRSVPed] = useState(false);
+  const [isAccepted, setIsAccepted] = useState(false);
   const [guestCount, setGuestCount] = useState(1);
   const [maxGuests, setMaxGuests] = useState(2);
   const [guestName, setGuestName] = useState("[Nombre del Invitado]");
@@ -423,9 +474,12 @@ export default function App() {
             setMaxGuests(data.integrantes);
 
             // Si ya tiene una respuesta guardada, cargamos el conteo y mostramos vista de éxito
-            if (data.estatus === 'Aceptada' || data.estatus === 'No aceptada') {
+            if (data.estatus === 'Aceptada') {
               setIsRSVPed(true);
+              setIsAccepted(true);
               if (data.confirmados !== undefined) setGuestCount(data.confirmados);
+            } else if (data.estatus === 'No aceptada') {
+              setIsRSVPed(true);
             } else {
               setGuestCount(data.integrantes); // Por defecto el máximo
             }
@@ -455,7 +509,10 @@ export default function App() {
         })
       });
       setIsRSVPed(true);
-      if (status === 'Rechazado') {
+      if (status === 'Aceptado') {
+        setIsAccepted(true);
+        alert("¡Gracias por confirmar! Pronto recibirás más detalles.");
+      } else {
         alert("Sentimos que no puedas asistir. ¡Gracias por avisarnos!");
       }
     } catch (err) {
@@ -804,7 +861,7 @@ export default function App() {
                             Significa mucho para nosotros que nos acompañes.
                           </p>
                           <button
-                            onClick={() => setIsRSVPed(false)}
+                            onClick={() => { setIsRSVPed(false); setIsAccepted(false); }}
                             className="mt-8 text-gold-dark font-serif text-[10px] tracking-[0.4em] uppercase hover:underline transition-all"
                           >
                             Editar Respuesta
@@ -815,6 +872,11 @@ export default function App() {
                   </div>
                 </div>
               </section>
+
+              {/* Lista de invitados — SOLO visible si aceptó */}
+              {isAccepted && (
+                <GuestListSection guestName={guestName} guestCount={guestCount} />
+              )}
 
               <footer className="pb-20 text-center opacity-40">
                 <div className="w-16 h-[1px] bg-gold mx-auto mb-10" />

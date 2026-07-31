@@ -15,7 +15,7 @@ async function listIds() {
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'INVITACIONES!J5:J100', 
+      range: 'INVITADOS!J5:J100', 
     });
     const ids = response.data.values || [];
     console.log("--- IDs ENCONTRADOS EN COLUMNA J ---");

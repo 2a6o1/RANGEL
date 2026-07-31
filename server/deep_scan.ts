@@ -15,7 +15,7 @@ async function deepScan() {
   const targetId = "SE457U";
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: 'INVITACIONES!A1:N10',
+    range: 'INVITADOS!A1:N10',
   });
   const rows = response.data.values || [];
   const guestRow = rows.find(row => row[9] === targetId);
