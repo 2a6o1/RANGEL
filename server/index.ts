@@ -40,12 +40,12 @@ app.get('/api/guest/:id', async (req, res) => {
     const { id } = req.params;
     
     console.log(`[Server] Intentando consultar Spreadsheet: ${spreadsheetId?.substring(0, 5)}...`);
-    console.log(`[Server] Rango solicitado: 'INVITADOS!A:Z'`);
+    console.log(`[Server] Rango solicitado: 'INVITACIONES!A:Z'`);
 
     // Leemos la hoja
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'INVITADOS!A:Z', 
+      range: 'INVITACIONES!A:Z', 
     });
 
     const rows = response.data.values;
@@ -91,7 +91,7 @@ app.post('/api/rsvp', async (req, res) => {
     
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'INVITADOS!J:J', 
+      range: 'INVITACIONES!J:J', 
     });
 
     const rows = response.data.values;
@@ -107,7 +107,7 @@ app.post('/api/rsvp', async (req, res) => {
 
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `INVITADOS!K${realRowIndex}:L${realRowIndex}`,
+      range: `INVITACIONES!K${realRowIndex}:L${realRowIndex}`,
       valueInputOption: 'USER_ENTERED',
       requestBody: {
         values: [[finalStatus, finalCount]],
@@ -138,7 +138,7 @@ async function autoProvisionIds() {
     console.log("[AutoID] 🔍 Escaneando hoja para nuevos registros sin ID...");
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'INVITADOS!B5:O500', 
+      range: 'INVITACIONES!B5:O500', 
     });
 
     const rows = response.data.values || [];
@@ -173,11 +173,11 @@ async function autoProvisionIds() {
 
       if (needsUpdate && idToUse) {
         updates.push({
-          range: `INVITADOS!J${realRowIndex}`,
+          range: `INVITACIONES!J${realRowIndex}`,
           values: [[idToUse]]
         });
         updates.push({
-          range: `INVITADOS!O${realRowIndex}`,
+          range: `INVITACIONES!O${realRowIndex}`,
           values: [[expectedUrl]]
         });
       }

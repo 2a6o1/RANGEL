@@ -15,7 +15,7 @@ async function debug() {
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'INVITADOS!A1:H5',
+      range: 'INVITACIONES!A1:H5',
     });
 
     const rows = response.data.values || [];
