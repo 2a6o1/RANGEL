@@ -15,7 +15,6 @@ import {
   Volume2,
   VolumeX,
   Music,
-  ShoppingBag,
   Gift,
   Copy,
   Check
@@ -290,16 +289,16 @@ const InfoWizard = ({ onComplete, isCompleted }: { onComplete: () => void, isCom
   );
 };
 
-// Datos de la Mesa de Regalos (a reemplazar por la pareja)
+// Datos de la Mesa de Regalos
 const giftStores: { nombre: string; url: string; icono: LucideIcon }[] = [
-  { nombre: "Liverpool", url: "https://www.liverpool.com.mx/", icono: ShoppingBag },
-  { nombre: "Amazon", url: "https://www.amazon.com.mx/", icono: Gift },
+  { nombre: "El Palacio de Hierro", url: "https://www.elpalaciodehierro.com/listaregalos#/event/5002074", icono: Gift },
 ];
 
 const bankData = {
-  banco: "Banco",
-  clabe: "000000000000000000", // 18 dígitos
-  titular: "Titular de la cuenta",
+  banco: "Banorte",
+  clabe: "072225013556852382", // 18 dígitos
+  titular: "Alejandro Estrada",
+  concepto: "Nombre del Invitado",
 };
 
 // Componente: Mesa de Regalos
@@ -377,6 +376,9 @@ const GiftRegistry = () => {
               <p className="font-serif text-sm text-ink/70 uppercase tracking-widest">{bankData.banco}</p>
               <p className="font-display text-2xl md:text-3xl italic text-ink tracking-[0.06em]">{bankData.clabe}</p>
               <p className="font-serif text-sm text-ink/70 italic">{bankData.titular}</p>
+              <p className="font-serif text-[10px] uppercase tracking-widest text-gold-dark mt-2">
+                Concepto: {bankData.concepto}
+              </p>
             </div>
             <button
               onClick={copyClabe}
