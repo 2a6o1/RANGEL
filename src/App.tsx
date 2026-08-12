@@ -536,9 +536,12 @@ export default function App() {
             setMaxGuests(data.integrantes);
 
             // Si ya tiene una respuesta guardada, cargamos el conteo y mostramos vista de éxito
-            if (data.estatus === 'Aceptada' || data.estatus === 'No aceptada') {
-              setRsvpStatus(data.estatus);
-              if (data.confirmados !== undefined) setGuestCount(data.confirmados);
+            if (data.estatus === 'Aceptada') {
+              setRsvpStatus('Aceptada');
+              setGuestCount(Number(data.confirmados) || data.integrantes);
+            } else if (data.estatus === 'No aceptada') {
+              setRsvpStatus('No aceptada');
+              setGuestCount(data.integrantes);
             } else {
               setGuestCount(data.integrantes); // Por defecto el máximo
             }
@@ -558,7 +561,7 @@ export default function App() {
 
     setIsLoading(true);
     try {
-      await fetch(`${apiUrl}/api/rsvp`, {
+      const res = await fetch(`${apiUrl}/api/rsvp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -567,6 +570,7 @@ export default function App() {
           guestCount: status === 'Aceptado' ? guestCount : 0
         })
       });
+      if (!res.ok) throw new Error(`Error del servidor: ${res.status}`);
       setRsvpStatus(status === 'Aceptado' ? 'Aceptada' : 'No aceptada');
       if (status === 'Rechazado') {
         alert("Sentimos que no puedas asistir. ¡Gracias por avisarnos!");
@@ -911,11 +915,22 @@ export default function App() {
                           <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center mb-6 shadow-inner">
                             <Heart className="text-gold-dark" size={32} fill="currentColor" />
                           </div>
-                          <h3 className="font-display text-4xl mb-4 italic text-ink">¡Estás en la lista!</h3>
-                          <p className="font-serif text-lg text-ink leading-relaxed text-center">
-                            Hemos recibido la confirmación de {guestCount} {guestCount === 1 ? 'persona' : 'personas'}. <br />
-                            Significa mucho para nosotros que nos acompañes.
-                          </p>
+                          {hasAccepted ? (
+                            <>
+                              <h3 className="font-display text-4xl mb-4 italic text-ink">¡Estás en la lista!</h3>
+                              <p className="font-serif text-lg text-ink leading-relaxed text-center">
+                                Hemos recibido la confirmación de {guestCount} {guestCount === 1 ? 'persona' : 'personas'}. <br />
+                                Significa mucho para nosotros que nos acompañes.
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <h3 className="font-display text-4xl mb-4 italic text-ink">Lamentamos no poder contar contigo</h3>
+                              <p className="font-serif text-lg text-ink leading-relaxed text-center">
+                                Gracias por avisarnos. Te esperaremos en la siguiente celebración.
+                              </p>
+                            </>
+                          )}
                           <button
                             onClick={() => setRsvpStatus(null)}
                             className="mt-8 text-gold-dark font-serif text-[10px] tracking-[0.4em] uppercase hover:underline transition-all"
