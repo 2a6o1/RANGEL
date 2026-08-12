@@ -14,8 +14,13 @@ import {
   Sparkles,
   Volume2,
   VolumeX,
-  Music
+  Music,
+  ShoppingBag,
+  Gift,
+  Copy,
+  Check
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import React, { useRef, useState, useEffect } from "react";
 
 // Componente para las imágenes flotantes de fondo
@@ -282,6 +287,112 @@ const InfoWizard = ({ onComplete, isCompleted }: { onComplete: () => void, isCom
         </motion.div>
       </AnimatePresence>
     </div>
+  );
+};
+
+// Datos de la Mesa de Regalos (a reemplazar por la pareja)
+const giftStores: { nombre: string; url: string; icono: LucideIcon }[] = [
+  { nombre: "Liverpool", url: "https://www.liverpool.com.mx/", icono: ShoppingBag },
+  { nombre: "Amazon", url: "https://www.amazon.com.mx/", icono: Gift },
+];
+
+const bankData = {
+  banco: "Banco",
+  clabe: "000000000000000000", // 18 dígitos
+  titular: "Titular de la cuenta",
+};
+
+// Componente: Mesa de Regalos
+const GiftRegistry = () => {
+  const [copied, setCopied] = useState(false);
+
+  const copyClabe = async () => {
+    try {
+      await navigator.clipboard.writeText(bankData.clabe);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      alert(`CLABE: ${bankData.clabe}`);
+    }
+  };
+
+  return (
+    <section className="w-full mb-32">
+      <motion.div
+        initial={{ opacity: 0, y: 60 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full"
+      >
+        {/* Header */}
+        <div className="mb-12 flex flex-col items-center text-center">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="w-12 h-[1px] bg-gold/30" />
+            <span className="font-serif text-[10px] tracking-[0.6em] uppercase text-gold-dark italic">
+              / Mesa de Regalos /
+            </span>
+            <div className="w-12 h-[1px] bg-gold/30" />
+          </div>
+          <p className="font-serif text-lg text-ink/70 italic max-w-md">
+            Su presencia es el mejor regalo, pero si desean obsequiarnos algo más, aquí tienen algunas opciones.
+          </p>
+        </div>
+
+        {/* Parte 1: Mesas en tiendas */}
+        <div className="mb-10">
+          <div className="gold-border p-6 md:p-10 bg-white rounded-3xl shadow-xl">
+            <h4 className="font-serif text-[10px] tracking-[0.4em] uppercase text-gold-dark mb-8 text-center">
+              Mesas en Tiendas
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {giftStores.map((store) => (
+                <a
+                  key={store.nombre}
+                  href={store.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex flex-col items-center gap-4 border border-gold/10 rounded-2xl p-8 bg-white/50 hover:bg-gold/5 transition-all duration-500 shadow-sm"
+                >
+                  <div className="p-4 rounded-full bg-gold/10 group-hover:bg-gold/20 transition-colors">
+                    <store.icono className="text-gold-dark" size={28} strokeWidth={1} />
+                  </div>
+                  <span className="font-display text-2xl italic text-ink">{store.nombre}</span>
+                  <span className="font-serif text-xs tracking-[0.3em] uppercase text-gold-dark group-hover:text-ink transition-colors">
+                    Ver mesa →
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Parte 2: Datos bancarios */}
+        <div>
+          <div className="gold-border p-6 md:p-10 bg-white rounded-3xl shadow-xl text-center">
+            <h4 className="font-serif text-[10px] tracking-[0.4em] uppercase text-gold-dark mb-8">
+              Transferencia
+            </h4>
+            <div className="flex flex-col items-center gap-2 mb-8">
+              <p className="font-serif text-sm text-ink/70 uppercase tracking-widest">{bankData.banco}</p>
+              <p className="font-display text-2xl md:text-3xl italic text-ink tracking-[0.06em]">{bankData.clabe}</p>
+              <p className="font-serif text-sm text-ink/70 italic">{bankData.titular}</p>
+            </div>
+            <button
+              onClick={copyClabe}
+              className={`inline-flex items-center gap-3 rounded-full px-8 py-4 font-serif text-xs tracking-[0.3em] uppercase transition-all duration-500 active:scale-95 ${
+                copied
+                  ? "bg-gold-dark text-cream"
+                  : "bg-ink text-cream hover:bg-gold-dark"
+              }`}
+            >
+              {copied ? <Check size={18} /> : <Copy size={18} />}
+              {copied ? "Copiada" : "Copiar CLABE"}
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </section>
   );
 };
 
@@ -817,6 +928,9 @@ export default function App() {
                   </div>
                 </div>
               </section>
+
+              {/* Mesa de Regalos - solo visible si el invitado aceptó */}
+              {hasAccepted && <GiftRegistry />}
 
               <footer className="pb-20 text-center opacity-40">
                 <div className="w-16 h-[1px] bg-gold mx-auto mb-10" />
