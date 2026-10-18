@@ -849,7 +849,7 @@ export default function App() {
                         <MessageSquare className="text-gold mb-8 mx-auto" size={32} strokeWidth={1} />
                         <h3 className="font-display text-4xl mb-6 italic">Confirmar Asistencia</h3>
                         <p className="font-serif text-xl mb-10 text-ink leading-relaxed">
-                          Le solicitamos amablemente su confirmación antes del primero de Octubre.
+                          Le solicitamos amablemente su confirmación.
                         </p>
 
                         {/* Guest Count Selector */}
